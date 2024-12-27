@@ -169,10 +169,7 @@
             <label>SKU:</label>
             <span>{{$product->SKU}}</span>
           </div>
-          <div class="meta-item">
-            <label>Categories:</label>
-            <span>{{$product->category->name}}</span>
-          </div>          
+           
         </div>
       </div>
     </div>

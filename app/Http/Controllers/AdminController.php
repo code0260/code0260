@@ -1,8 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Product;
-use App\Models\Brand;
-use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\Slide;
 use App\Models\OrderItem;
@@ -15,7 +13,6 @@ use App\Models\Contact;
 use App\Models\ProductSpecification;
 use Carbon\Carbon;
 use Intervention\Image\Laravel\Facades\Image;
-use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -67,239 +64,7 @@ class AdminController extends Controller
                       'TotalOrderedAmount','TotalDeliveredAmount','TotalCanceledAmount' ));
 }
 
-    public function brands ()
-    {
-        $brands = Brand::orderBy('id','desc')->paginate(10);
-        return view('admin.brands', compact('brands'));
-    }
-    public function brand_add()
-    {
-        return view('admin.brand-add');
-    }
-    public function brand_store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'slug' => 'required|unique:brands,slug',  // تأكد من أن هذه الإشارة إلى جدول brands
-            'image' => 'mimes:png,jpg,jpeg'
-        ]);
-    
-        $brand = new Brand();  
-        $brand->name = $request->name;
-        $brand->slug = Str::slug($request->name);
-        // معالجة الصورة
-        $image = $request->file('image');
-        $file_extension = $request->file('image')->extension();
-        $file_name = Carbon::now()->timestamp . '.' . $file_extension;
-    
-        $this->GenerateBrandThumbailsImage1($image, $file_name);
-        $brand->image = $file_name;
-    
-        // حفظ البيانات في جدول brands
-        $brand->save();
-    
-        return redirect()->route('admin.brands')->with('status', 'Brand has added successfully');
-    }
-    
-
-public function brand_edit($id)
-{
-    $brand= Brand::find($id);
-
-    return view('admin.brand-edit', compact('brand'));
-}
-
-public function brand_update(Request $request)
-{
-$request->validate([
-    'name' => 'required',
-
-    'slug'=>'required|unique:brands,slug,'.$request->id,
-
-    'image' => 'mimes:png,jpg,jpeg'
-]);
-$brand=Brand::find($request->id);
-$brand->name = $request->name;
-$brand->slug = Str::slug($request->name) ;
-if ($request->hasFile('image')){
-
-    if(File::exists(public_path('uploads/brand').'/'.$brand->image))
-    
-    {
-    
-    File::delete(public_path('uploads/brand').'/'.$brand->image);
-    }
-    $image =  $request->file('image');
-    $file_extention = $request->file('image')->extension();
-    
-    $file_name=Carbon::now()->timestamp.'.'.$file_extention;
-    $this->GenerateBrandThumbailsImage1($image, $file_name);
-    $brand->image = $file_name;
-}
-
-$brand->save();
-return redirect()->route('admin.brands')->with('status','Brand has updated succesfully');
-}
-
-
-public function GenerateBrandThumbailsImage1($image, $imageName) {
-    
-$destinationPath = public_path('uploads/brands');
-
-$img = Image::read($image->path());
-
-$img->cover(124,124, "top");
-
-$img->resize(124, 124, function($constraint){
-
-$constraint->aspectRatio();
-
-})->save($destinationPath . '/' . $imageName, 100); // جودة 100%
-    
-
-}
-
-public function brand_delete($id)
-{
-
-$brand = Brand::find($id);
-
-if (File::exists(public_path('uploads/brands').'/'.$brand->image))
-
-{
-
-File::delete(public_path('uploads/brands').'/'.$brand->image);
-
-}
-
-$brand->delete();
-
-return redirect()->route('admin.brands')->with('status', 'Brand has been deleted successfully!');
-
-}
-   
-public function categories()
-
-{
-
-$categories = Category:: orderBy('id', 'DESC')->paginate (10);
-
-return view('admin.categories', compact('categories'));
- }
- public function category_add()
- {
-    return view('admin.category-add');
- }
- public function category_store (Request $request)
-
-{
-    $request->validate([
-        'name' => 'required',
-        'slug' => 'required|unique:categories,slug',
-        'image' => 'mimes:png,jpg,jpeg',
-    ]);
-    
-
-$category = new Category();
-
-$category->name = $request->name;
-
-$category->slug = str::slug($request->name);
-
-$image = $request->file('image');
-
-$file_extention = $request->file('image')->extension();
-
-$file_name = Carbon::now()->timestamp.'.'.$file_extention;
-
-$this->GenerateCategoryThumbailsImage($image, $file_name);
-
-$category->image = $file_name;
-
-$category->save();
-
-return redirect()->route('admin.categories')->with('status', 'Category has been added succesfully!');
-
-}
-
-
-
-
-public function GenerateCategoryThumbailsImage($image, $imageName)
-
-{
-
-$destinationPath = public_path('uploads/categories');
-
-$img = Image::read($image->path());
-
-$img->cover(124,124, "top");
-
-$img->resize(124, 124, function($constraint){
-
-$constraint->aspectRatio();
-
-})->save($destinationPath . '/' . $imageName, 100); // جودة 100%
-}
-
-public function category_edit($id){
-
-$category = Category:: find($id);
-
-return view('admin.category-edit', compact('category'));
-} 
-
-public function category_update(Request $request)
-{
-$request->validate([
-    'name' => 'required',
-
-    'slug'=>'required|unique:categories,slug,'.$request->id,
-
-    'image' => 'mimes:png,jpg,jpeg'
-]);
-$category=Category::find($request->id);
-$category->name = $request->name;
-$category->slug = Str::slug($request->name) ;
-if ($request->hasFile('image')){
-
-    if(File::exists(public_path('uploads/categories').'/'.$category->image))
-    
-    {
-    
-    File::delete(public_path('uploads/categories').'/'.$category->image);
-    }
-    $image =  $request->file('image');
-    $file_extention = $request->file('image')->extension();
-    
-    $file_name=Carbon::now()->timestamp.'.'.$file_extention;
-    $this->GenerateCategoryThumbailsImage($image, $file_name);
-    $category->image = $file_name;
-}
-
-$category->save();
-return redirect()->route('admin.categories')->with('status','Category has updated succesfully');
-}
-
-public function category_delete($id)
-{
-
-$category = Category::find($id);
-
-if (File::exists(public_path('uploads/categories').'/'.$category->image))
-
-{
-
-File::delete(public_path('uploads/categories').'/'.$category->image);
-
-}
-
-$category->delete();
-
-return redirect()->route('admin.categories')->with('status', 'Category has been deleted successfully!');
-
-}
-
+ 
 public function products()
 
 {
@@ -312,106 +77,62 @@ return view('admin.products', compact('products'));
 public function product_add()
 
 {
-
-$categories = Category:: select('id', 'name')->orderBy('name')->get();
-
-$brands = Brand::select('id', 'name')->orderBy('name')->get();
-
-return view('admin.product-add',compact('categories', 'brands'));
+$product = Product::orderBy('created_at','DESC')->first();
+return view('admin.product-add', compact('product'));
 }
 
 
 
-public function product_store (Request $request)
+public function product_store(Request $request)
 {
     $request->validate([
         'name' => 'required',
-        'short_description' => 'nullable',
-        'description' => 'nullable',
-        'regular_price' => 'nullable',
-        'sale_price' => 'nullable',
-        'SKU' => 'nullable',
-        'stock_status' => 'required',
-        'featured' => 'nullable',
-        'quantity' => 'nullable',
-        'image' => 'nullable|mimes:png,jpg,jpeg',
-        'category_id' => 'required',
-        'brand_id' => 'required',
-        'specifications.*.description' => 'nullable|string',
-        'specifications.*.image' => 'nullable|mimes:png,jpg,jpeg',
+        'stock_status' => 'required|in:active,inactive',
+        'featured' => 'nullable|boolean',
+        'specifications.*.name' => 'required|string',
+        'specifications.*.title' => 'nullable|string',
+        'specifications.*.paragraphs' => 'nullable|array',
+        'specifications.*.images' => 'array', // تحقق من أن الصور مصفوفة
     ]);
 
+    // إنشاء المنتج
     $product = new Product();
     $product->name = $request->name;
-    $product->slug= $this->generateReferenceCode($request);
-    $product->short_description = $request->short_description ?? null;  // إذا كانت فارغة، يتم تخزين null
-    $product->description = $request->description ?? null;
-    $product->regular_price = $request->regular_price ?? null;
-    $product->sale_price = $request->sale_price ?? null;
-    $product->SKU = $request->SKU ?? null;
+    $product->slug = $this->generateReferenceCode($request);
     $product->stock_status = $request->stock_status;
-    $product->featured = $request->featured ?? 0;
-    $product->quantity = $request->quantity ?? 0;
-    $product->category_id = $request->category_id;
-    $product->brand_id = $request->brand_id;
+    $product->featured = $request->featured ?? false;
     $product->adding_date = Carbon::now();
+    $product->save();
 
-$current_timestamp = Carbon::now()->timestamp;
-if($request->hasFile('image'))
-{
-$image = $request->file('image');
-$imageName = $current_timestamp. '.' . $image->extension();
-$this->GenerateProductThumbnailImage($image,$imageName);
-$product->image = $imageName;
-}
+    // حفظ المواصفات
+    if ($request->has('specifications')) {
+        foreach ($request->specifications as $spec) {
+            $specification = new ProductSpecification();
+            $specification->product_id = $product->id;
+            $specification->name = $spec['name'];
+            $specification->title = $spec['title'] ?? null;
 
+            // حفظ الجمل الموصوفة
+            if (isset($spec['paragraphs'])) {
+                $specification->paragraphs = json_encode($spec['paragraphs']);
+            }
 
-$gallery_arr = array();
-$gallery_images = "";
-$counter = 1;
-if ($request->hasFile('images'))
-{
-$allowedfileExtion = ['jpg', 'png', 'jpeg'];
-$files = $request->file('images');
-foreach($files as $file)
-{
-$gextension = $file->getClientOriginalExtension();
-$gcheck=in_array($gextension, $allowedfileExtion);
-if($gcheck)
-{
-    $gfileName = $current_timestamp. "-" . $counter. "." . $gextension;
-
-    $this->GenerateProductThumbnailImage($file, $gfileName);
-    
-    array_push($gallery_arr, $gfileName);
-    
-    $counter = $counter + 1;
-}
-}
-$gallery_images = implode(',', $gallery_arr);
-}
-
-$product->images = $gallery_images;
-
-$product->save();
-if ($request->has('specifications')) {
-    foreach ($request->specifications as $spec) {
-        $specification = new ProductSpecification();
-        $specification->product_id = $product->id;
-        $specification->description = $spec['description'];
-
-        if (isset($spec['image'])) {
-            $imageName = time() . '.' . $spec['image']->getClientOriginalExtension();
-            $spec['image']->move(public_path('uploads/products/specifications'), $imageName);
-            $specification->image = $imageName;
+            // حفظ الصور
+            $images = [];
+            if (isset($spec['images'])) {
+                foreach ($spec['images'] as $image) {
+                    $imageName = time() . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
+                    $image->move(public_path('uploads/products/specifications'), $imageName);
+                    $images[] = $imageName;
+                }
+            }
+            $specification->images = json_encode($images);
+            $specification->save();
         }
-
-        $specification->save();
     }
-}
 
-return redirect()->route('admin.products')->with('status', 'Product added successfully');
-} 
+    return redirect()->route('admin.products')->with('status', 'Product added successfully');
+}
 
 
 public function GenerateProductThumbnailImage($image, $imageName)
@@ -430,132 +151,75 @@ $img->resize (104, 104, function($constraint) {
 public function product_edit($id)
 {
 $product= Product::find($id);
-$categories= Category::select('id', 'name')->orderBy('name')->get();
-$brands = Brand::select('id', 'name')->orderBy('name')->get();
 $specifications = ProductSpecification::where('product_id', $id)->get();
 
-return view('admin.product-edit', compact('product', 'categories', 'brands','specifications'));
+return view('admin.product-edit', compact('product', 'specifications'));
 }
 
-public function product_update (Request $request)
+public function product_update(Request $request)
 {
     $request->validate([
-        'name' => 'required',
-        'short_description' => 'nullable',
-        'description' => 'nullable',
-        'regular_price' => 'nullable',
-        'sale_price' => 'nullable',
-        'SKU' => 'nullable',
-        'stock_status' => 'required',
-        'featured' => 'nullable',
-        'quantity' => 'nullable',
-        'image' => 'nullable|mimes:png,jpg,jpeg',
-        'category_id' => 'required',
-        'brand_id' => 'required',
-         'specifications.*.description' => 'nullable|string',
-        'specifications.*.image' => 'nullable|mimes:png,jpg,jpeg'
+        'name' => 'required|string|max:255',
+        'stock_status' => 'required|in:active,inactive',
+        'featured' => 'nullable|boolean',
+        'specifications.*.id' => 'nullable|integer|exists:product_specifications,id',
+        'specifications.*.name' => 'required|string|max:255',
+        'specifications.*.title' => 'nullable|string|max:255',
+        'specifications.*.paragraphs' => 'nullable|array',
+        'specifications.*.images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
-    $product = Product::find($request->id);
+    // تحديث بيانات المنتج
+    $product = Product::findOrFail($request->id);
     $product->name = $request->name;
-    $product->slug= $this->generateReferenceCode($request);
-    $product->short_description = $request->short_description ?? null;
-    $product->description = $request->description ?? null;
-    $product->regular_price = $request->regular_price ?? null;
-    $product->sale_price = $request->sale_price ?? null;
-    $product->SKU = $request->SKU ?? null;
+    $product->slug = $this->generateReferenceCode($request);
     $product->stock_status = $request->stock_status;
-    $product->featured = $request->featured ?? 0;
-    $product->quantity = $request->quantity ?? 0;
-    $product->category_id = $request->category_id;
-    $product->brand_id = $request->brand_id;
-$current_timestamp = Carbon::now()->timestamp;
+    $product->featured = $request->featured ?? false;
+    $product->save();
 
-if($request->hasFile('image'))
-{
-    if(File::exists(public_path('uploads/products').'/'.$product->image))
-    {
-        File::delete(public_path('uploads/products').'/'.$product->image);
-    }
-    if(File::exists(public_path('uploads/products/thumbnails').'/'.$product->image))
-    {
-        File::delete(public_path('uploads/products/thumbnails').'/'.$product->image);
-    }
-$image = $request->file('image');
-$imageName = $current_timestamp. '.' . $image->extension();
-$this->GenerateProductThumbnailImage($image,$imageName);
-$product->image = $imageName;
-}
+    // المواصفات الجديدة والمحدثة
+    $updatedSpecIds = [];
+    if ($request->has('specifications')) {
+        foreach ($request->specifications as $spec) {
+            if (isset($spec['id']) && $spec['id']) {
+                $specification = ProductSpecification::findOrFail($spec['id']);
+            } else {
+                $specification = new ProductSpecification();
+                $specification->product_id = $product->id;
+            }
 
+            // تحديث الحقول
+            $specification->name = $spec['name'];
+            $specification->title = $spec['title'] ?? null;
+            $specification->paragraphs = isset($spec['paragraphs']) ? json_encode($spec['paragraphs']) : null;
 
-$gallery_arr = array();
-$gallery_images = "";
-$counter = 1;
-if ($request->hasFile('images'))
-{
-foreach(explode(',', $product->images)as $ofile)
-{
-    if(File::exists(public_path('uploads/products').'/'.$ofile))
-    {
-        File::delete(public_path('uploads/products').'/'.$ofile);
-    }
-    if(File::exists(public_path('uploads/products/thumbnails').'/'.$ofile))
-    {
-        File::delete(public_path('uploads/products/thumbnails').'/'.$ofile);
-    }
-}
-$allowedfileExtion = ['jpg', 'png', 'jpeg'];
-$files = $request->file('images');
-foreach($files as $file)
-{
-$gextension = $file->getClientOriginalExtension();
-$gcheck=in_array($gextension, $allowedfileExtion);
-if($gcheck)
-{
-    $gfileName = $current_timestamp. "-" . $counter. "." . $gextension;
+            // إدارة الصور
+            $images = $specification->images ? json_decode($specification->images, true) : [];
+            if (isset($spec['images'])) {
+                foreach ($spec['images'] as $image) {
+                    if ($image instanceof \Illuminate\Http\UploadedFile) {
+                        $imageName = time() . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
+                        $image->move(public_path('uploads/products/specifications'), $imageName);
+                        $images[] = $imageName;
+                    }
+                }
+            }
+            $specification->images = json_encode($images);
 
-    $this->GenerateProductThumbnailImage($file, $gfileName);
-    
-    array_push($gallery_arr, $gfileName);
-    
-    $counter = $counter + 1;
-}
-}
-$gallery_images = implode(',', $gallery_arr);
-$product->images = $gallery_images;
-
-}
- 
-if ($request->has('specifications')) {
-    foreach ($request->specifications as $index => $spec) {
-        // إذا كانت المواصفة تحتوي على "id"، تحقق من وجودها
-        if (isset($spec['id']) && $spec['id']) {
-            $specification = ProductSpecification::find($spec['id']);
-        } else {
-            // إذا لم تحتوي على "id"، أنشئ مواصفة جديدة
-            $specification = new ProductSpecification();
-            $specification->product_id = $product->id;
+            $specification->save();
+            $updatedSpecIds[] = $specification->id;
         }
-
-        // تحديث الوصف للمواصفة
-        $specification->description = $spec['description'];
-
-        // تحقق من وجود صورة قبل إضافتها
-        if (isset($spec['image']) && $spec['image']) {
-            $imageName = time() . '.' . $spec['image']->extension();
-            $spec['image']->move(public_path('uploads/specifications'), $imageName);
-            $specification->image = $imageName;
-        }
-
-        // حفظ المواصفة
-        $specification->save();
     }
+
+    // حذف المواصفات المحذوفة
+    ProductSpecification::where('product_id', $product->id)
+        ->whereNotIn('id', $updatedSpecIds)
+        ->delete();
+
+    return redirect()->route('admin.products')->with('status', 'Product has been updated successfully!');
 }
 
-$product->save();
 
-return redirect()->route('admin.products')->with('status', 'Product has been updated successfully!');
-}
 public function product_delete($id)
 {
 $product=Product::find($id);
@@ -582,72 +246,6 @@ $product->delete();
 return redirect()->route('admin.products')->with('status', 'Product has been deleted successfully!');
 }
 
-public function coupons()
-
-            {
-
-                $coupons = Coupon::orderBy('expiry_date', 'DESC')->paginate (12);
-                return view('admin.coupons', compact('coupons'));
-            }
-
-            public function coupon_add()
-            {
-                return view('admin.coupon-add');
-            }
-
-   public function coupon_store(Request $request)
-{
-    $request->validate([
-        'code' => 'required',
-        'type' => 'required',
-        'value' => 'required|numeric',
-        'cart_value' => 'required|numeric',
-        'expiry_date' => 'required|date',
-    ]);
-
-    $coupon = new Coupon();
-    $coupon->code = $request->code;
-    $coupon->type = $request->type;
-    $coupon->value = $request->value;
-    $coupon->cart_value = $request->cart_value;
-    $coupon->expiry_date = $request->expiry_date;
-    $coupon->save();
-
-    return redirect()->route('admin.coupons')->with('status', 'Coupon has been added successfully!');
-}
-
-public function coupon_edit($id)
-{
-    $coupon=  Coupon::find($id);
-    return view('admin.coupon-edit',compact('coupon'));
-}
-
-public function coupon_update(Request $request)
-{
-    $request->validate([
-        'code' => 'required',
-        'type' => 'required',
-        'value' => 'required|numeric',
-        'cart_value' => 'required|numeric',
-        'expiry_date' => 'required|date',
-    ]);
-
-    $coupon = Coupon::find($request->id);
-    $coupon->code = $request->code;
-    $coupon->type = $request->type;
-    $coupon->value = $request->value;
-    $coupon->cart_value = $request->cart_value;
-    $coupon->expiry_date = $request->expiry_date;
-    $coupon->save();
-    return redirect()->route('admin.coupons')->with('status', 'Coupon has been updated successfully!');
-}
-
-public function coupon_delete($id)
-{
-    $coupon = Coupon::find($id); // تصحيح: إضافة علامة "=" بعد "$coupon"
-    $coupon->delete();
-    return redirect()->route('admin.coupons')->with('status', 'Coupon has been deleted successfully!');
-}
 
 public function orders()
 {
@@ -665,9 +263,8 @@ public function order_details($order_id)
         ->orderBy('id')
         ->paginate(12);
 
-    $transaction = Transaction::where('order_id', $order_id)->first();
 
-    return view('admin.order-details', compact('order', 'orderItems', 'transaction'));
+    return view('admin.order-details', compact('order', 'orderItems'));
 }
 
 
@@ -839,26 +436,7 @@ public function GenerateSlideThumbailsImage($image, $imageName)
             }
             
 
-            public function contacts()
-            {
-                $contacts = Contact::orderBy('created_at', 'DESC')->paginate(10);
-            
-                return view('admin.contacts', compact('contacts'));
-            }
-            
-
-                         public function contact_delete($id)
-
-                        {
-
-                        $contact = Contact::find($id);
-
-                        $contact->delete();
-
-                        return redirect()->route('admin.contacts')->with("status", "Contact deleted successfully!");
-
-                        }
-
+         
 
                         public function search(Request $request)
                         {
@@ -883,60 +461,69 @@ public function GenerateSlideThumbailsImage($image, $imageName)
                         }
 
 
-                        private function getProductCode($categoryId)
-    {
-        $productCodes = [
-            1 => 'DEC', // Demountable Container
-            2 => 'FLS', // Flatpack Storage Container
-            3 => 'FLC', // Flatpack Container
-            4 => 'HSH', // Heavy Steel Hangar
-            5 => 'LSK', // LGS Modern Kiosk
-            6 => 'LSB', // Light Gauge Steel Building
-            7 => 'LSH', // Light Gauge Steel House
-            8 => 'MOB', // Modular Building
-            9 => 'MOH', // Modular House
-            10 => 'PAC', // Panel Cabin
-            11 => 'PER', // Pergola
-            12 => 'POC', // Polyester Cabin
-            13 => 'PEB', // Pre-Engineered Building
-            14 => 'TEN', // Tent
-        ];
-
-        return $productCodes[$categoryId] ?? 'UNK'; // UNK للمنتجات غير المعروفة
-    }
-
                         private function generateReferenceCode(Request $request)
-{
-    // **الحصول على تاريخ الطلب**
-    $date = Carbon::now()->format('ymd');
+                        {
+                            // الحصول على تاريخ اليوم
+                            $date = Carbon::now()->format('ymd');
+                            
+                            // تحديد كود نوع المنتج بناءً على الاسم أو معايير أخرى (بدون الاعتماد على category_id)
+                            $productType = $this->getProductCodeByName($request->name);
+                        
+                            // الحصول على رقم الموظف
+                            $employeeId = str_pad(Auth::user()->id, 3, '0', STR_PAD_LEFT);
+                        
+                            // تحديد الرقم التسلسلي
+                            $sequence = Product::whereDate('created_at', Carbon::today())->count() + 1;
+                            $sequenceFormatted = str_pad($sequence, 3, '0', STR_PAD_LEFT);
+                        
+                            // صياغة الريفرنس كود الأساسي
+                            $baseReferenceCode = "{$date}-{$productType}-{$employeeId}-{$sequenceFormatted}";
+                            $referenceCode = $baseReferenceCode;
+                            
+                            $counter = 1;
+                        
+                            // التأكد من أن الكود فريد
+                            while (Product::where('slug', $referenceCode)->exists()) {
+                                $referenceCode = "{$baseReferenceCode}-{$counter}";
+                                $counter++;
+                            }
+                        
+                            return $referenceCode;
+                        }
+                        
+                        
+                        // دالة جديدة للحصول على كود نوع المنتج بناءً على الاسم
+                        private function getProductCodeByName($productName)
+                        {
+                            // تحديد قائمة بأنواع المنتجات بناءً على الاسم
+                            $productCodes = [
+                                'Demountable Container' => 'DEC',
+                                'Flatpack Storage Container' => 'FLS',
+                                'Flatpack Container' => 'FLC',
+                                'Heavy Steel Hangar' => 'HSH',
+                                'LGS Modern Kiosk' => 'LSK',
+                                'Light Gauge Steel Building' => 'LSB',
+                                'Light Gauge Steel House' => 'LSH',
+                                'Modular Building' => 'MOB',
+                                'Modular House' => 'MOH',
+                                'Panel Cabin' => 'PAC',
+                                'Pergola' => 'PER',
+                                'Polyester Cabin' => 'POC',
+                                'Pre-Engineered Building' => 'PEB',
+                                'Tent' => 'TEN',
+                            ];
+                        
+                            // إذا لم يكن المنتج معروفًا، نرجع كود 'UNK'
+                            foreach ($productCodes as $name => $code) {
+                                if (stripos($productName, $name) !== false) {
+                                    return $code;
+                                }
+                            }
+                        
+                            return 'UNK';  // في حال لم يتم العثور على نوع المنتج
+                        }
+                        
 
-    // **تحديد كود المنتج**
-    $productType = $this->getProductCode($request->category_id); // يجب كتابة دالة getProductCode
-
-    // **الحصول على رقم الموظف**
-    $employeeId = str_pad(Auth::user()->id, 3, '0', STR_PAD_LEFT);
-
-    // **تحديد الرقم التسلسلي**
-    $sequence = Product::whereDate('created_at', Carbon::today())
-                ->where('category_id', $request->category_id)
-                ->count() + 1;
-
-    $sequenceFormatted = str_pad($sequence, 3, '0', STR_PAD_LEFT);
-
-    // **صياغة الريفرنس كود**
-    return "{$date}-{$productType}-{$employeeId}-{$sequenceFormatted}";
-}
-
-public function generateReferenceCodeAjax(Request $request)
-{
-    $request->validate([
-        'category_id' => 'required|exists:categories,id',
-    ]);
-
-    $referenceCode = $this->generateReferenceCode($request);
-
-    return response()->json(['reference_code' => $referenceCode]);
-}
 
 
 public function generateOrderPDF($id)
@@ -965,4 +552,4 @@ public function generateOrderPDF($id)
 
 
 
-}
+} 

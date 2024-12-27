@@ -86,9 +86,7 @@
                             <th class="text-center">Price</th>
                             <th class="text-center">Quantity</th>
                             <th class="text-center">Reference Code</th>
-                            <th class="text-center">Category</th>
-                            <th class="text-center">Brand</th>
-                            <th class="text-center">Options</th>
+                             <th class="text-center">Options</th>
                             <th class="text-center">Return Status</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -111,9 +109,7 @@
                             <td class="text-center">${{ $item->price }}</td>
                             <td class="text-center">{{ $item->quantity }}</td>
                             <td class="text-center">{{ $item->product->slug }}</td>
-                            <td class="text-center">{{ $item->product->category->name }}</td>
-                            <td class="text-center">{{ $item->product->brand->name }}</td>
-                            <td class="text-center">{{ $item->options }}</td>
+                             <td class="text-center">{{ $item->options }}</td>
                             <td class="text-center">{{ $item->rstatus == 0 ? 'No' : 'Yes' }}</td>
                             <td class="text-center">
                                

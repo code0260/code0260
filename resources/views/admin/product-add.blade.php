@@ -42,105 +42,20 @@
                     
                
 
-
-                <div class="gap22 cols">
-                    <fieldset class="category">
-                        <div class="body-title mb-10">Category <span class="tf-color-1">*</span>
-                        </div>
-                        <div class="select">
-                            <select class="" name="category_id">
-                                <option>Choose category</option>
-                                @foreach ($categories as $category )
-                                <option value="{{$category->id}}">{{$category->name}}</option>
-
-                                @endforeach
-                            
-                            </select>
-                        </div>
-                    </fieldset>
-                    @error('category_id')<span class="alert alert-danger text-center">{{$message}}</span>@enderror
-
-                    <fieldset class="brand">
-                        <div class="body-title mb-10">Company <span class="tf-color-1">*</span>
-                        </div>
-                        <div class="select">
-                            <select class="" name="brand_id">
-                                @foreach ($brands as $brand )
-                                <option value="{{$brand->id}}">{{$brand->name}}</option>
-
-                                @endforeach
-                            </select>
-                        </div>
-                    </fieldset>
-                    @error('brand_id')<span class="alert alert-danger text-center">{{$message}}</span>@enderror
-
-                </div>
-
-                {{--<fieldset class="shortdescription">
-                    <div class="body-title mb-10">Short Description <span class="tf-color-1">*</span></div>
-                    <textarea class="mb-10 ht-150" name="short_description" placeholder="Short Description" tabindex="0" aria-required="true">{{old('short_description')}}</textarea>
-                    <div class="text-tiny">Do not exceed 100 characters when entering the
-                        product name.</div>
-                </fieldset>
-                @error('short_description')<span class="alert alert-danger text-center">{{$message}}</span>@enderror
-                       --}}    
-                <fieldset class="description">
-                    <div class="body-title mb-10">Description <span class="tf-color-1">*</span>
-                    </div>
-                    <textarea class="mb-10" name="description" placeholder="Description" tabindex="0" aria-required="true">{{old('description')}}</textarea>
-                    <div class="text-tiny">Do not exceed 100 characters when entering the
-                        product name.</div>
-                </fieldset>
-                @error('description')<span class="alert alert-danger text-center">{{$message}}</span>@enderror
-                
+ 
+               
             </div>
             <div class="wg-box">
-               {{-- <fieldset class="name">
-                    <div class="body-title mb-10">Upload images <span class="tf-color-1">*</span>
-                    </div>
-                    <div class="upload-image flex-grow">
-                        <div class="item" id="imgpreview" style="display:none">
-                            <img src="../../../localhost_8000/images/upload/upload-1.png" class="effect8" alt="">
-                        </div>
-                        <div id="upload-file" class="item up-load">
-                            <label class="uploadfile" for="myFile">
-                                <span class="icon">
-                                    <i class="icon-upload-cloud"></i>
-                                </span>
-                                <span class="body-text">Drop your images here or select <span class="tf-color">click to browse</span></span>
-                                <input type="file" id="myFile" name="image" accept="image/*">
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-                @error('image')<span class="alert alert-danger text-center">{{$message}}</span>@enderror
-                
-                <fieldset>
-                    <div class="body-title mb-10">Upload Gallery Images</div>
-                    <div class="upload-image mb-16">
-                        <div id="galUpload" class="item up-load">
-                            <label class="uploadfile" for="gFile">
-                                <span class="icon">
-                                    <i class="icon-upload-cloud"></i>
-                                </span>
-                                <span class="text-tiny">Drop your images here or select <span
-                                        class="tf-color">click to browse</span></span>
-                                        <input type="file" id="gFile" name="images[]" accept="image/*" multiple="">
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-                @error('images')<span class="alert alert-danger text-center">{{$message}}</span>@enderror
-                --}}
+               
                 <fieldset class="specifications">
-                    <div class="body-title mb-10">Specifications</div>
-                    
-                    <!-- Container for specifications -->
-                    <div id="specifications-container">
-                        <!-- Dynamic specifications will be added here -->
-                    </div>
-                    
-                    <button type="button" id="add-specification-btn" class="tf-button">Add Specification</button>
+                   <!-- زر إضافة مواصفات -->
+<button type="button" id="add-specification-btn" class="tf-button">Add Specification</button>
+
+<!-- مكان إضافة الحقول الجديدة -->
+<div id="specifications-container">
+    <!-- الحقول المضافة ديناميكياً ستظهر هنا -->
+</div>
+
                 </fieldset>
                 
                 <div class="cols gap22">
@@ -170,89 +85,106 @@
 
 @push('scripts')
 <script>
-
-$(function(){
-$("#myFile").on("change", function(e){
-const photoInp = $("#myFile");
-const [file] = this.files;
-if(file)
-{
-$("#imgpreview img").attr('src', URL.createObjectURL(file));
-$("#imgpreview").show();
-}
-});
-$("#gFile").on("change", function(e){
-const photoInp = $("#gFile");
-const gphotos = this.files;
-$.each(gphotos, function (key, val) {
-$("#galUpload").prepend(`<div class="item gitems"><img src="${URL.createObjectURL (val)}" /></div>`);
-});
-});
-
-
-$(document).on('change', 'select[name="category_id"], input[name="name"]', function () {
-    const categoryId = $('select[name="category_id"]').val();
-    const name = $('input[name="name"]').val();
-
-    if (categoryId && name) {
-        $.ajax({
-            url: '/admin/generate-reference-code',
-            method: 'POST',
-            data: {
-                category_id: categoryId,
-                name: name,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function (response) {
-                $('#reference_code').val(response.reference_code);
-            }
-        });
-    }
-});
-
-
-});
-function StringToSlug(Text)
-{
-return Text.toLowerCase()
-.replace(/[^\w ]+/g,"")
-.replace(/ +/g,"-");
-}
-
-    $(document).ready(function() {
-        let specificationCounter = 0; // Counter to uniquely identify each specification
-    
-        // Event listener for the "Add Specification" button
-        $('#add-specification-btn').on('click', function() {
-            specificationCounter++;
-    
-            // Create the new specification fields (description and image upload)
-            let newSpecification = `
-                <div class="specification-item" id="specification-${specificationCounter}">
-                    <div class="specification-description">
-                        <label for="spec-description-${specificationCounter}">Specification Description:</label>
-                        <textarea name="specifications[${specificationCounter}][description]" id="spec-description-${specificationCounter}" class="mb-10" placeholder="Enter specification description"></textarea>
-                    </div>
-                    
-                    <div class="specification-image">
-                        <label for="spec-image-${specificationCounter}">Specification Image:</label>
-                        <input type="file" name="specifications[${specificationCounter}][image]" id="spec-image-${specificationCounter}" accept="image/*">
-                    </div>
-                    
-                    <button type="button" class="remove-specification-btn" data-spec-id="${specificationCounter}">Remove</button>
-                </div>
-            `;
-    
-            // Append the new specification to the container
-            $('#specifications-container').append(newSpecification);
-        });
-    
-        // Event listener for removing a specification
-        $(document).on('click', '.remove-specification-btn', function() {
-            let specId = $(this).data('spec-id');
-            $(`#specification-${specId}`).remove();
-        });
+// عند تحميل الصفحة
+$(document).ready(function () {
+    // معاينة صورة واحدة عند التغيير
+    $("#myFile").on("change", function () {
+        const [file] = this.files;
+        if (file) {
+            $("#imgpreview img").attr('src', URL.createObjectURL(file));
+            $("#imgpreview").show();
+        }
     });
+
+    // إضافة صور الغاليري عند التغيير
+    $(document).on("change", "input[type='file'][id^='gFile']", function () {
+        const galleryId = $(this).attr('id').replace('gFile-', 'galUpload-');
+        const galleryContainer = $(`#${galleryId}`);
+        const files = this.files;
+
+        if (files.length > 0) {
+            $.each(files, function (_, file) {
+                const imgPreview = `<div class='item gitems'><img src='${URL.createObjectURL(file)}' alt='Gallery Image' /></div>`;
+                galleryContainer.prepend(imgPreview);
+            });
+        }
+    });
+
+    // عداد للمواصفات الجديدة
+    let specificationCounter = 0;
+
+    // عند الضغط على زر "Add Specification"
+    $('#add-specification-btn').on('click', function () {
+        specificationCounter++;
+
+        // إنشاء HTML للمواصفة الجديدة
+        const newSpecification = `
+            <div class="specification-item" id="specification-${specificationCounter}">
+                <div class="specification-name">
+                    <label for="spec-name-${specificationCounter}">Specification Name:</label>
+                    <input type="text" name="specifications[${specificationCounter}][name]" id="spec-name-${specificationCounter}" placeholder="Enter specification name" required>
+                </div>
+                <div class="specification-title">
+                    <label for="spec-title-${specificationCounter}">Specification Title:</label>
+                    <input type="text" name="specifications[${specificationCounter}][title]" id="spec-title-${specificationCounter}" placeholder="Enter specification title">
+                </div>
+                <div class="specification-paragraphs">
+                    <label for="spec-paragraphs-${specificationCounter}">Specification Paragraphs:</label>
+                    <textarea name="specifications[${specificationCounter}][paragraphs][]" id="spec-paragraphs-${specificationCounter}" placeholder="Enter paragraphs (comma-separated)"></textarea>
+                </div>
+                <div class="specification-gallery">
+                    <fieldset>
+                        <div class="body-title mb-10">Upload Gallery Images</div>
+                        <div class="upload-image mb-16">
+                            <div id="galUpload-${specificationCounter}" class="item up-load">
+                                <label class="uploadfile" for="gFile-${specificationCounter}">
+                                    <span class="icon">
+                                        <i class="icon-upload-cloud"></i>
+                                    </span>
+                                    <span class="text-tiny">Drop your images here or select <span class="tf-color">click to browse</span></span>
+                                    <input type="file" id="gFile-${specificationCounter}" name="specifications[${specificationCounter}][images][]" accept="image/*" multiple>
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                <button type="button" class="remove-specification-btn" data-spec-id="${specificationCounter}">Remove</button>
+            </div>`;
+
+        // إضافة المواصفة الجديدة
+        $('#specifications-container').append(newSpecification);
+    });
+
+    // إزالة المواصفة عند الضغط على زر الحذف
+    $(document).on('click', '.remove-specification-btn', function () {
+        const specId = $(this).data('spec-id');
+        $(`#specification-${specId}`).remove();
+    });
+
+    // توليد كود المرجع بناءً على اسم المنتج
+    $(document).on('change', 'input[name="name"]', function () {
+        const name = $(this).val();
+
+        if (name) {
+            $.ajax({
+                url: '/admin/generate-reference-code',
+                method: 'POST',
+                data: {
+                    name: name,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function (response) {
+                    $('#reference_code').val(response.reference_code);
+                },
+                error: function () {
+                    console.error('Failed to generate reference code.');
+                }
+            });
+        }
+    });
+});
+
+
     </script>
     
 @endpush

@@ -1,195 +1,182 @@
 @extends('layouts.app')
 @section('content')
 <style>
-  .text-success {
-    color: #278c04 !important;
-  }.text-danger
-{
-color: #d61808 !important;
-}
+  .shop-checkout {
+    font-family: Arial, sans-serif;
+    margin: 20px auto;
+  }
+  .page-title {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  .cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  .cart-table th, .cart-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  .cart-table th {
+    background-color: #f8f8f8;
+    color: #555;
+  }
+  .cart-table__wrapper {
+    overflow-x: auto;
+  }
+  .shopping-cart__product-item__detail h4 {
+    font-size: 16px;
+    color: #333;
+  }
+  .specification {
+    margin: 10px 0;
+  }
+  .specification p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+  }
+  .spec-images img {
+    margin: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  .qty-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qty-control__number {
+    width: 50px;
+    text-align: center;
+    margin: 0 5px;
+  }
+  .btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+  .btn-info {
+    background-color: #17a2b8;
+    color: white;
+  }
+  .shopping-cart__totals-wrapper {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+  .mobile_fixed-btn_wrapper {
+    text-align: center;
+    margin-top: 20px;
+  }
 </style>
 
 <main class="pt-90">
-    <div class="mb-4 pb-4"></div>
     <section class="shop-checkout container">
       <h2 class="page-title">Order</h2>
-  
-    
-      
+
       <div class="shopping-cart">
-
-        @if ($items->count()>0)
-
-            <div class="cart-table__wrapper">
-          <table class="cart-table">
-            <thead>
-              <tr>
-                <th>Product</th>
-                <th></th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Subtotal</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach ($items as $item)
-                
-              <tr>
-                <td>
-                  <div class="shopping-cart__product-item">
-                    <img loading="lazy" src="{{asset('uploads/products/thumbnails')}}/{{$item->model->image}}" width="120" height="120" alt="{{$item->name}}" />
-                  </div>
-                </td>
-                <td>
-                  <div class="shopping-cart__product-item__detail">
-                    <h4>{{$item->name}}</h4>
-                    <ul class="shopping-cart__product-item__options">
-                      <li></li>
-                      <li></li>
-                    </ul>
-                  </div>
-                </td>
-                <td>
-                  <span class="shopping-cart__product-price">${{$item->price}}</span>
-                
-                  <form method="POST" action="{{ route('cart.price.update', ['rowId' => $item->rowId]) }}" style="display:inline;">
-                    @csrf
-                    @method('PUT')
-                    <div class="d-flex align-items-center">
-                      <input type="number" name="price" value="{{ $item->price }}" step="0.01" class="form-control form-control-sm" style="width: 80px; margin-right: 5px;">
-                      <button type="submit" class="btn btn-sm btn-primary">Update</button>
-                    </div>
-                  </form>
-                </td>
-                
-                <td>
-                  <div class="qty-control position-relative">
-                    <input type="number" name="quantity" value="{{$item->qty}}" min="1" class="qty-control__number text-center">
-                    <form method="POST" action="{{route('cart.qty.decrease',['rowId'=>$item->rowId])}}" >
-                      @csrf
-                      @method('PUT')
-
-                    <div class="qty-control__reduce">-</div>
-                    </form>
-
-                    <form method="POST" action="{{route('cart.qty.increase',['rowId'=>$item->rowId])}}" >
-                      @csrf
-                      @method('PUT')
-                    <div class="qty-control__increase">+</div>
-                    </form>
-                  </div>
-                </td>
-                <td>
-                  <span class="shopping-cart__subtotal">${{$item->subTotal()}}</span>
-                </td>
-                <td>
-                  <form method="POST" action="{{route('cart.item.remove', ['rowId'=>$item->rowId])}}">
-                    @csrf
-                    @method('DELETE')
-                  <a href="javascript:void(0)" class="remove-cart">
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="#767676" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M0.259435 8.85506L9.11449 0L10 0.885506L1.14494 9.74056L0.259435 8.85506Z" />
-                      <path d="M0.885506 0.0889838L9.74057 8.94404L8.85506 9.82955L0 0.97449L0.885506 0.0889838Z" />
-                    </svg>
-                  </a>
-                  </form>
-                </td>
-              </tr>
-              @endforeach
-
-            
-            </tbody>
-          </table>
-          <div>
-            @if(Session::has('success'))
-                <p class="text-success">{{ Session::get('success') }}</p>
-            @elseif(Session::has('error'))
-                <p class="text-danger">{{ Session::get('error') }}</p>
-            @endif
-            </div>
-        </div>
-        <div class="shopping-cart__totals-wrapper">
-          <div class="sticky-content">
-            <div class="shopping-cart__totals">
-              <h3>Product Totals</h3>
-              @if(Session::has('discounts'))
-
-              <table class="cart-totals">
-              
+        @if ($items->count() > 0)
+          <div class="cart-table__wrapper">
+            <table class="cart-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Specifications</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Subtotal</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
               <tbody>
-              
-              <tr>
-              
-              <th>Subtotal</th>
-              
-              <td>${{Cart::instance('cart')->subtotal()}}</td>
-              
-              </tr>
-              
-              <tr>
-              
-              <th>Discount {{Session::get('coupon') ['code']}}</th>
-              
-              <td>${{Session::get('checkout') ['discount']}}</td>
-              
-              </tr>
-              
-              <tr>
-              
-              <th>Subtotal After Discount</th>
-              
-              <td>${{Session::get('checkout') ['subtotal']}}</td>
-              
-              </tr>
-          
-              
-              <tr>
-              
-              <th>Total</th>
-              
-              <td>${{Session::get('checkout') ['total']}}</td>
-              
-              </tr>
-              
-              </tbody>
-              
-              </table>
-              
-              @else
-              <table class="cart-totals">
-                <tbody>
-                  <tr>
-                    <th>Total</th>
-                    <td>${{ Cart::instance('cart')->subtotal() }}</td>
-                  </tr>
-                  
-         
-                </tbody>
-              </table>
-            @endif
-            
-            </div>
-            <div class="mobile_fixed-btn_wrapper">
-              <div class="button-wrapper container">
-                <a href="{{route('cart.checkout')}}" class="btn btn-primary btn-checkout">PROCEED TO CHECKOUT</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        @else
-        <div class="row">
-        <div class="col-md-12 text-center pt-5 bp-5">
-        <p>No Item found in your cart</p>
-         <a href="{{route('shop.index')}}" class="btn btn-info">Order Now</a>
-          </div>
-          </div>
+                @foreach ($items as $item)
+                <tr>
+                  <td>
+                    <h4>{{ $item->name }}</h4>
+                  </td>
+                  <td>
+                    @foreach ($item->options['specifications'] as $spec)
+ 
+                    <div class="specification">
+                      <strong>{{ $spec['name'] }}:</strong>
+                      <p>{{ $spec['title'] ?? 'No title' }}</p>
+                      @foreach ($spec['paragraphs'] as $paragraph)
+                      <p>{{ $paragraph }}</p>
+                      @endforeach
+                      @if (!empty($spec['images']))
+                      <div class="spec-images">
+                        @foreach ($spec['images'] as $image)
+                        <img src="{{ asset('uploads/products/specifications/' . $image) }}" alt="spec image" width="50" height="50">
+                        @endforeach
+                      </div>
+                      @endif
+                    </div>
+                    @endforeach
+                  </td>
+                  <td>
+                    <span class="shopping-cart__product-price">${{ $item->price }}</span>
+                    <form method="POST" action="{{ route('cart.price.update', ['rowId' => $item->rowId]) }}" style="display:inline;">
+                        @csrf
+                        @method('PUT')
+                        <div class="d-flex align-items-center">
+                            <input type="number" name="price" value="{{ $item->price }}" step="0.01" class="form-control form-control-sm" style="width: 80px; margin-right: 5px;">
+                            <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                        </div>
+                    </form>
+                  </td>
+                  <td>
+                    <div class="qty-control">
+                      <form method="POST" action="{{ route('cart.qty.decrease', ['rowId' => $item->rowId]) }}">
+                        @csrf @method('PUT')
+                        <button class="btn btn-primary">-</button>
+                      </form>
+                      <input type="number" class="qty-control__number" value="{{ $item->qty }}">
+                      <form method="POST" action="{{ route('cart.qty.increase', ['rowId' => $item->rowId]) }}">
+                        @csrf @method('PUT')
+                        <button class="btn btn-primary">+</button>
+                      </form>
+                    </div>
+                  </td>
+                  <td>${{ $item->subTotal() }}</td>
+                  <td>
+                    <form method="POST" action="{{ route('cart.item.remove', ['rowId' => $item->rowId]) }}">
+                      @csrf @method('DELETE')
+                      <button class="btn btn-danger">Remove</button>
+                    </form>
+                    <a href="{{ route('cart.edit', ['rowId' => $item->rowId]) }}" class="btn btn-info">Edit</a>
 
+                  </td>
+                </tr>
+                @endforeach
+              </tbody>
+              <div class="shopping-cart__totals-wrapper">
+                <h3>Product Totals</h3>
+                <p>Total: ${{ Cart::instance('cart')->subtotal() }}</p>
+                <div class="mobile_fixed-btn_wrapper">
+                  <a href="{{route('cart.checkout')}}" class="btn btn-primary">PROCEED TO CHECKOUT</a>
+                </div>
+              </div>
+            </table>
+          </div>
+          
+        @else
+        <p class="text-center">No items in your cart. <a href="{{route('shop.index')}}" class="btn btn-info">Order Now</a></p>
         @endif
       </div>
     </section>
-  </main>
-
+</main>
 @endsection
 
 @push('scripts')

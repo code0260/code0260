@@ -46,11 +46,8 @@
                             <th>Name</th>
                            
                             <th>Reference Code</th>
-                            <th>Category</th>
-                            <th>Company</th>
-                            <th>Status</th>
-                            <th>Quantity</th>
-                            <th>Action</th>
+                             <th>Status</th>
+                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,17 +57,13 @@
                         <tr>
                             <td>{{$product->id}}</td>
                             <td class="pname">
-                                <div class="image">
-                                    <img src="{{ asset('uploads/products/thumbnails') }}/{{ $product->image }}" alt="{{ $product->name }}" class="image">
-                                </div>
+                                
                                 <div class="name">
                                     <a href="#" class="body-title-2">{{$product->name}}</a>
                                 </div>
                             </td>
                             <td>{{$product->slug}}</td>
-                            <td>{{$product->category->name}}</td>
-                            <td>{{$product->brand->name}}</td>
-                            <td class="text-center">
+                             <td class="text-center">
                                 @if($product->stock_status == 'active')
                                     <span class="badge bg-success">Active</span>
                                 @elseif($product->stock_status == 'inactive')
@@ -79,7 +72,7 @@
                                     <span class="badge bg-warning">Unknown</span>
                                 @endif
                             </td>
-                                                        <td>{{$product->quantity}}</td>
+                                                       
                             <td>
                                 <div class="list-icon-function">
                                     <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}" target="_blank">

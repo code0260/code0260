@@ -8,8 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\WishlistController;
-
+ 
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
@@ -23,29 +22,24 @@ Route::post('/cart/add', [CartController::class, 'add_to_cart'])->name('cart.add
 Route::put('/cart/increase-quantity/{rowId}', [CartController::class, 'increase_cart_quantity'])->name('cart.qty.increase');
 Route::put('/cart/decrease-quantity/{rowId}', [CartController::class, 'decrease_cart_quantity'])->name('cart.qty.decrease');
 Route::put('/cart/update-price/{rowId}', [CartController::class, 'update_price'])->name('cart.price.update');
-
 Route::delete('/cart/remove/{rowId}', [CartController::class, 'remove_item'])->name('cart.item.remove');
 Route::delete('/cart/clear', [CartController::class, 'empty_cart'])->name('cart.empty');
+
+
+// في ملف routes/web.php
+Route::get('cart/{rowId}/edit', [CartController::class, 'edit_cart_item'])->name('cart.edit');
+Route::put('cart/{rowId}', [CartController::class, 'update_cart_item'])->name('cart.update');
+
+Route::get('/order/{orderId}/download-pdf', [CartController::class, 'downloadPdf'])->name('order.downloadPdf');
+
+
  
-
-Route::post('/cart/apply-coupon', [CartController::class, 'apply_coupon_code'])->name('cart.coupon.apply');
-Route::delete('/cart/remove-coupon', [CartController::class, 'remove_coupon_code'])->name('cart.coupon.remove');
-
-
-Route::post('/wishlist/add', [WishlistController::class, 'add_to_wishlist'])->name('wishlist.add');
-Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-Route::delete('/wishlist/remove/{rowId}', [WishlistController::class, 'remove_item'])->name('wishlist.item.remove');
-Route::delete('/wishlist/clear', [WishlistController::class, 'empty_wishlist'])->name('wishlist.item.clear');
-Route::post('/wishlist/move-to-cart/{rowId}', [WishlistController::class, 'move_to_cart'])->name('wishlist.move.to.cart');
-
 
 Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/place-an-order', [CartController::class, 'place_an_order'])->name('cart.place.an.order');
 Route::get('/order-confirmation', [CartController::class, 'order_confirmation'])->name('cart.order.confirmation');
-Route::get('/contact-us', [HomeController::class, 'contact'])->name('home.contact');
-
-Route::post('/contact/store', [HomeController::class, 'contact_store'])->name('home.contact.store');
-Route::get('/search', [HomeController::class, 'search'])->name('home.search');
+ 
+ Route::get('/search', [HomeController::class, 'search'])->name('home.search');
 
 
 Route::middleware(['auth'])->group (function(){
@@ -63,21 +57,7 @@ Route::middleware(['auth', AuthAdmin::class])->group(function(){
 Route::get('/admin', [AdminController::class, 'index'])->name("admin.index");
 
 
-Route::get('/admin/brands',[AdminController::class,'brands'])->name('admin.brands');
-Route::get('/admin/brand/add',[AdminController::class,'brand_add'])->name('admin.brand.add');
-Route::post('/admin/brand/store', [AdminController::class, 'brand_store'])->name('admin.brand.store');
-Route::get('/admin/brand/edit/{id}', [AdminController::class, 'brand_edit'])->name('admin.brand.edit');
-Route::put('/admin/brand/update', [AdminController::class, 'brand_update'])->name('admin.brand.update');
-Route::delete('/admin/brand/{id}/delete', [AdminController::class, 'brand_delete'])->name('admin.brand.delete');
 Route::post('/admin/generate-reference-code', [AdminController::class, 'generateReferenceCodeAjax'])->name('admin.generate.reference.code');
-
-
-Route::get('/admin/categories', [AdminController::class, 'categories'])->name('admin.categories');
-Route::get('/admin/category/add', [AdminController::class, 'category_add'])->name('admin.category.add');
-Route::post('/admin/category/store', [AdminController::class, 'category_store'])->name('admin.category.store');
-Route::get('/admin/category/edit/{id}', [AdminController::class, 'category_edit'])->name('admin.category-edit');
-Route::put('/admin/category/update', [AdminController::class, 'category_update'])->name('admin.category.update');
-Route::delete('/admin/category/{id}/delete', [AdminController::class, 'category_delete'])->name('admin.category.delete');
 
 
 
@@ -90,13 +70,6 @@ Route::delete('/admin/product/{id}/delete', [AdminController::class, 'product_de
 
 
 
-
-Route::get('/admin/coupons', [AdminController::class, 'coupons'])->name('admin.coupons');
-Route::get('/admin/coupon/add', [AdminController::class, 'coupon_add'])->name('admin.coupon.add');
-Route::post('/admin/coupon/store', [AdminController::class, 'coupon_store'])->name('admin.coupon.store');
-Route::get('/admin/coupon/edit/{id}', [AdminController::class, 'coupon_edit'])->name('admin.coupon.edit');
-Route::put('/admin/coupon/update', [AdminController::class, 'coupon_update'])->name('admin.coupon.update');
-Route::delete('/admin/coupon/{id}/delete', [AdminController::class, 'coupon_delete'])->name('admin.coupon.delete');
 
 Route::get('/admin/orders',[AdminController::class,'orders'])->name('admin.orders');
 
@@ -112,8 +85,6 @@ Route::put('/admin/slide/update', [AdminController::class, 'slide_update'])->nam
 Route::delete('/admin/slide/{id}/delete', [AdminController::class, 'slide_delete'])->name('admin.slide.delete');
 
 
-Route::get('/admin/contacts',[AdminController::class,'contacts'])->name('admin.contacts');
-Route::delete('/admin/contact/{id}/delete', [AdminController::class, 'contact_delete'])->name('admin.contact.delete');
 Route::get('/admin/search', [AdminController::class, 'search'])->name('admin.search');
 Route::get('/admin/orders/search', action: [AdminController::class, 'search_order'])->name('admin.orders.search');
 

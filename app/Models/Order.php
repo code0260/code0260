@@ -21,4 +21,8 @@ class Order extends Model
                 {
                 return $this->hasone (Transaction::class);
                 }
+                public function productSpecifications()
+                {
+                    return $this->hasMany(ProductOrderSpecification::class, 'order_id');  // ربط المواصفات بالطلب
+                }
 }

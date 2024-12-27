@@ -103,24 +103,7 @@
                              
                                 
                             
-                            <li class="menu-item has-children">
-                                    <a href="javascript:void(0);" class="menu-item-button">
-                                        <div class="icon"><i class="icon-layers"></i></div>
-                                        <div class="text">Category</div>
-                                    </a>
-                                    <ul class="sub-menu">
-                                        <li class="sub-menu-item">
-                                            <a href="{{route('admin.category.add')}}" class="">
-                                                <div class="text">New Category</div>
-                                            </a>
-                                        </li>
-                                        <li class="sub-menu-item">
-                                            <a href="{{route('admin.categories')}}" class="">
-                                                <div class="text">Categories</div>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
+                             
 
                                 <li class="menu-item">
                                     <a href="{{route('admin.orders')}}" class="menu-item-button">
@@ -130,40 +113,9 @@
                                       
                                      
                                 </li>
-                                {{--<li class="menu-item has-children">
-                                    <a href="javascript:void(0);" class="menu-item-button">
-                                        <div class="icon"><i class="icon-layers"></i></div>
-                                        <div class="text">Inquiries</div>
-                                    </a>
-                                    <ul class="sub-menu">
-                                        <li class="sub-menu-item">
-                                            <a href="{{route('admin.slides')}}" class="">
-                                                <div class="text">Add Inquiries</div>
-                                            </a>
-                                        </li>
-                                        <li class="sub-menu-item">
-                                            <a href="{{route('admin.slides')}}" class="">
-                                                <div class="text">Inquiries</div>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>--}}
-                                <li class="menu-item">
-                                    <a href="{{ route('admin.contacts') }}" class="">
-                                        <div class="icon">
-                                            <i class="fas fa-chart-bar"></i> <!-- أيقونة التقرير -->
-                                        </div>
-                                        <div class="text">Reports</div>
-                                    </a>
-                                </li>
-                            
-                                {{--<li class="menu-item">
-                                    <a href="{{route('admin.coupons')}}" class="">
-                                        <div class="icon"><i class="icon-grid"></i></div>
-                                        <div class="text">Coupons</div>
-                                    </a>
-                                </li>--}}
-                               
+                                
+                              
+                                
 
                                 <li class="menu-item">
                                     <a href="settings.html" class="">
