@@ -40,4 +40,8 @@ class OrderItem extends Model
     {
         return $this->hasMany(ProductOrderSpecification::class);
     }
+    public function specifications()
+{
+    return $this->hasMany(ProductOrderSpecification::class, 'order_item_id');
+}
 }

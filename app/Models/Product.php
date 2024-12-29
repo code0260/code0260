@@ -9,10 +9,15 @@ class Product extends Model
 {
     use HasFactory;
    
-    public function specifications()
+    /*public function specifications()
     {
         return $this->hasMany(ProductSpecification::class, 'product_id');
-    }
+    }*/
+    public function specifications()
+{
+    return $this->hasMany(ProductSpecification::class);
+}
+
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
