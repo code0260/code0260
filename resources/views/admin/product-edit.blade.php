@@ -39,7 +39,14 @@
                     <div class="text-tiny">Do not exceed 100 characters when entering the product name.</div>
                 </fieldset>
                 @error('name')<span class="alert alert-danger text-center">{{ $message }}</span>@enderror
-           
+                <fieldset class="description">
+                    <div class="body-title mb-10">Description <span class="tf-color-1">*</span>
+                    </div>
+                    <textarea class="mb-10" name="description" placeholder="Description" tabindex="0" aria-required="true" required="">{{$product->description}}</textarea>
+                    <div class="text-tiny">Do not exceed 100 characters when entering the
+                        product name.</div>
+                </fieldset>
+                @error('description')<span class="alert alert-danger text-center">{{$message}}</span>@enderror
                 <div class="wg-box">
                     <fieldset class="name">
                         <div class="body-title mb-10">Status</div>

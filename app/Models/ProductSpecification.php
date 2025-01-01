@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class ProductSpecification extends Model
 {
     use HasFactory;
+    protected $table = 'product_specifications';
 
     protected $fillable = ['name', 'title', 'paragraphs', 'images', 'product_id'];
 

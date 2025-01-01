@@ -25,14 +25,17 @@ Route::put('/cart/update-price/{rowId}', [CartController::class, 'update_price']
 Route::delete('/cart/remove/{rowId}', [CartController::class, 'remove_item'])->name('cart.item.remove');
 Route::delete('/cart/clear', [CartController::class, 'empty_cart'])->name('cart.empty');
 
-
+ 
 // في ملف routes/web.php
 Route::get('cart/{rowId}/edit', [CartController::class, 'edit_cart_item'])->name('cart.edit');
-Route::put('cart/{rowId}', [CartController::class, 'update_cart_item'])->name('cart.update');
+Route::prefix('cart')->group(function () {
+    Route::put('update/{rowId}', [CartController::class, 'update_cart_item'])->name('cart.update');
+    Route::put('specifications/update/{rowId}', [CartController::class, 'update_specifications'])->name('cart.specifications.update');
+});
 
 Route::get('/order/{orderId}/download-pdf', [CartController::class, 'downloadPdf'])->name('order.downloadPdf');
 
-Route::put('/cart/specifications/update/{rowId}/{specIndex}', [CartController::class, 'updateSpecifications'])->name('cart.specifications.update');
+//Route::put('/cart/specifications/update/{rowId}/{specIndex}', [CartController::class, 'updateSpecifications'])->name('cart.specifications.update');
 
  
 

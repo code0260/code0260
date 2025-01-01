@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Details</title>
     <style>
-        /* يمكنك إضافة الأنماط الخاصة بك هنا */
         body {
             font-family: 'Arial', sans-serif;
             margin: 20px;
@@ -68,15 +67,15 @@
             justify-content: start;
         }
         .spec-images img {
-            width: 200px; 
-            height: 200px;
-            object-fit: cover;
+            width: 200px;  /* زيادة العرض */
+            height: 200px; /* زيادة الارتفاع */
+            object-fit: cover; /* حفظ جودة الصورة */
             border: 2px solid #ddd;
             border-radius: 8px;
             transition: transform 0.3s ease;
         }
         .spec-images img:hover {
-            transform: scale(1.1);
+            transform: scale(1.1); /* تأثير التكبير عند المرور */
         }
         .totals-table {
             background-color: #fff;
@@ -95,6 +94,7 @@
             color: #555;
         }
     </style>
+    
 </head>
 <body>
 
@@ -130,26 +130,24 @@
             @foreach ($item->product->specifications as $spec)
             <div>
                 <p><strong>{{ $spec->name }}:</strong> {{ $spec->title ?? 'No title' }}</p>
+
+                <!-- عرض الفقرات -->
                 @foreach (json_decode($spec->paragraphs) as $paragraph)
                 <p>{{ $paragraph }}</p>
                 @endforeach
 
+                <!-- عرض الصور -->
                 @if (!empty($spec->images))
                 <div class="spec-images">
                     @foreach (json_decode($spec->images) as $image)
                     @php
-                    $path = public_path('uploads/products/specifications/' . $image);
-                    $base64Image = file_exists($path) 
-                        ? 'data:image/' . pathinfo($path, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($path)) 
-                        : null;
+                        $base64Image = call_user_func($base64EncodeImage, public_path('uploads/products/specifications/' . $image));
                     @endphp
-
                     @if ($base64Image)
-                    <img src="{{ $base64Image }}" alt="spec image">
+                        <img src="{{ $base64Image }}" alt="spec image">
                     @else
-                    <p>Image not found: {{$image}}</p>
+                        <p>Image not found: {{$image}}</p>
                     @endif
-                    
                     @endforeach
                 </div>
                 @endif
@@ -171,57 +169,5 @@
         </table>
     </div>
 
-    <h3>Cart Items</h3>
-<table class="checkout-cart-items">
-    <thead>
-        <tr>
-            <th>PRODUCT</th>
-            <th>SPECIFICATIONS</th>
-            <th>QUANTITY</th>
-            <th>PRICE</th>
-            <th>SUBTOTAL</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($cartItems as $item)
-        <tr>
-            <td>{{ $item->name }}</td>
-            <td>
-                <!-- عرض المواصفات المخزنة في السلة -->
-                @if(isset($item->options['specifications']) && !empty($item->options['specifications']))
-                    <ul>
-                        @foreach($item->options['specifications'] as $spec)
-                            <li>
-                                <strong>{{ $spec['name'] }}:</strong>
-                                <p>{{ $spec['title'] ?? 'No title available' }}</p>
-                                <ul>
-                                    @foreach($spec['paragraphs'] ?? [] as $paragraph)
-                                        <li>{{ $paragraph }}</li>
-                                    @endforeach
-                                </ul>
-                                @if(!empty($spec['images']))
-                                    <div class="images">
-                                        @foreach($spec['images'] as $image)
-                                            <img src="{{ asset('storage/'.$image) }}" alt="Specification Image" width="80" height="80">
-                                        @endforeach
-                                    </div>
-                                @endif
-                            </li>
-                        @endforeach
-                    </ul>
-                @else
-                    <p>No specifications available</p>
-                @endif
-            </td>
-            <td>{{ $item->qty }}</td>
-            <td>${{ number_format($item->price, 2) }}</td>
-            <td>${{ number_format($item->price * $item->qty, 2) }}</td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
-
-    </div>
-    
 </body>
 </html>

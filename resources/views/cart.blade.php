@@ -34,19 +34,16 @@
   }
   .specification {
     margin: 10px 0;
-    font-size: 14px;
-    color: #555;
   }
   .specification p {
     margin: 5px 0;
+    font-size: 14px;
+    color: #555;
   }
   .spec-images img {
     margin: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
   }
   .qty-control {
     display: flex;
@@ -83,9 +80,6 @@
     text-align: center;
     margin-top: 20px;
   }
-  .specifications-list {
-    display: none;
-  }
 </style>
 
 <main class="pt-90">
@@ -113,23 +107,23 @@
                     <h4>{{ $item->name }}</h4>
                   </td>
                   <td>
-                    <button class="btn btn-info" onclick="toggleSpecifications({{ $loop->index }})">Toggle Specifications</button>
-                    <div class="specifications-list" id="specifications-{{ $loop->index }}">
-                      @foreach ($item->options['specifications'] as $key => $spec)
-                        <form method="POST" action="{{ route('cart.specifications.update', ['rowId' => $item->rowId, 'specIndex' => $key]) }}">
-                          @csrf
-                          @method('PUT')
-                          <div class="specification">
-                            <strong>{{ $spec['name'] }}:</strong>
-                            <input type="text" name="specifications[{{ $key }}][title]" value="{{ $spec['title'] ?? '' }}" placeholder="Enter title" class="form-control">
-                            @foreach ($spec['paragraphs'] as $index => $paragraph)
-                              <input type="text" name="specifications[{{ $key }}][paragraphs][{{ $index }}]" value="{{ $paragraph }}" placeholder="Enter paragraph" class="form-control">
-                            @endforeach
-                            <button type="submit" class="btn btn-sm btn-primary mt-2">Update Specification</button>
-                          </div>
-                        </form>
+                    @foreach ($item->options['specifications'] as $spec)
+ 
+                    <div class="specification">
+                      <strong>{{ $spec['name'] }}:</strong>
+                      <p>{{ $spec['title'] ?? 'No title' }}</p>
+                      @foreach ($spec['paragraphs'] as $paragraph)
+                      <p>{{ $paragraph }}</p>
                       @endforeach
+                      @if (!empty($spec['images']))
+                      <div class="spec-images">
+                        @foreach ($spec['images'] as $image)
+                        <img src="{{ asset('uploads/products/specifications/' . $image) }}" alt="spec image" width="50" height="50">
+                        @endforeach
+                      </div>
+                      @endif
                     </div>
+                    @endforeach
                   </td>
                   <td>
                     <span class="shopping-cart__product-price">${{ $item->price }}</span>
@@ -162,49 +156,43 @@
                       <button class="btn btn-danger">Remove</button>
                     </form>
                     <a href="{{ route('cart.edit', ['rowId' => $item->rowId]) }}" class="btn btn-info">Edit</a>
+
                   </td>
                 </tr>
                 @endforeach
               </tbody>
-            </table>
-
-            <div class="shopping-cart__totals-wrapper">
-              <h3>Product Totals</h3>
-              <p>Total: ${{ Cart::instance('cart')->subtotal() }}</p>
-              <div class="mobile_fixed-btn_wrapper">
-                <a href="{{ route('cart.checkout') }}" class="btn btn-primary">PROCEED TO CHECKOUT</a>
+              <div class="shopping-cart__totals-wrapper">
+                <h3>Product Totals</h3>
+                <p>Total: ${{ Cart::instance('cart')->subtotal() }}</p>
+                <div class="mobile_fixed-btn_wrapper">
+                  <a href="{{route('cart.checkout')}}" class="btn btn-primary">PROCEED TO CHECKOUT</a>
+                </div>
               </div>
-            </div>
-
+            </table>
           </div>
+          
         @else
-        <p class="text-center">No items in your cart. <a href="{{ route('shop.index') }}" class="btn btn-info">Order Now</a></p>
+        <p class="text-center">No items in your cart. <a href="{{route('shop.index')}}" class="btn btn-info">Order Now</a></p>
         @endif
       </div>
     </section>
 </main>
-
 @endsection
 
 @push('scripts')
 
 <script>
-  function toggleSpecifications(index) {
-    var specifications = document.getElementById('specifications-' + index);
-    specifications.style.display = (specifications.style.display === 'none' || specifications.style.display === '') ? 'block' : 'none';
-  }
 
-  $(function() {
-    $(".qty-control__increase").on("click", function() {
-      $(this).closest('form').submit();
-    });
-    $(".qty-control__reduce").on("click", function() {
-      $(this).closest('form').submit();
-    });
-    $('.remove-cart').on("click", function() {
-      $(this).closest('form').submit();
-    });
-  });
+$(function(){
+$(".qty-control__increase").on("click", function(){
+$(this).closest('form').submit();
+});
+$(".qty-control__reduce").on("click", function(){
+$(this).closest('form').submit();
+});
+$('.remove-cart').on("click", function(){
+$(this).closest('form').submit();
+});
+})
 </script>
-
 @endpush

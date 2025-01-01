@@ -16,18 +16,29 @@ class ProductOrderSpecification extends Model
     
  
     // علاقة مع المنتج
-    public function product()
+   /* public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'product_id');
     }
     
-    public function orderItem()
-    {
-        return $this->belongsTo(OrderItem::class);
-    }
+ 
 public function order()
     {
         return $this->belongsTo(Order::class);  // ربط المواصفات بالطلب
     }
+    public function orderItem()
+    {
+        return $this->belongsTo(OrderItem::class, 'order_item_id');
+    }*/
+    public function orderItem()
+{
+    return $this->belongsTo(OrderItem::class, 'order_item_id');
+}
+
+public function product()
+{
+    return $this->belongsTo(Product::class, 'product_id');
+}
+
 }
   

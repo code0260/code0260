@@ -88,6 +88,8 @@ public function product_store(Request $request)
     $request->validate([
         'name' => 'required',
         'stock_status' => 'required|in:active,inactive',
+        'description' => 'nullable',
+
         'featured' => 'nullable|boolean',
         'specifications.*.name' => 'required|string',
         'specifications.*.title' => 'nullable|string',
@@ -99,6 +101,8 @@ public function product_store(Request $request)
     $product = new Product();
     $product->name = $request->name;
     $product->slug = $this->generateReferenceCode($request);
+    $product->description = $request->description ?? 'No description available.';
+
     $product->stock_status = $request->stock_status;
     $product->featured = $request->featured ?? false;
     $product->adding_date = Carbon::now();
@@ -161,6 +165,8 @@ public function product_update(Request $request)
     $request->validate([
         'name' => 'required|string|max:255',
         'stock_status' => 'required|in:active,inactive',
+        'description' => 'nullable',
+
         'featured' => 'nullable|boolean',
         'specifications.*.id' => 'nullable|integer|exists:product_specifications,id',
         'specifications.*.name' => 'required|string|max:255',
@@ -173,6 +179,8 @@ public function product_update(Request $request)
     $product = Product::findOrFail($request->id);
     $product->name = $request->name;
     $product->slug = $this->generateReferenceCode($request);
+    $product->description = $request->description ?? 'No description available.';
+
     $product->stock_status = $request->stock_status;
     $product->featured = $request->featured ?? false;
     $product->save();

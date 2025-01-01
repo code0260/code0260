@@ -8,12 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-   
-    /*public function specifications()
+  /*  public function orderSpecifications()
+    {
+        return $this->hasMany(ProductOrderSpecification::class, 'product_id');
+    }
+    
+ 
+    public function specifications()
     {
         return $this->hasMany(ProductSpecification::class, 'product_id');
-    }*/
-    public function specifications()
+    }
+    public function productSpecifications()
 {
     return $this->hasMany(ProductSpecification::class);
 }
@@ -27,5 +32,15 @@ class Product extends Model
     public function productOrderSpecifications()
     {
         return $this->hasMany(ProductOrderSpecification::class);
-    }
+    }*/
+    public function specifications()
+{
+    return $this->hasMany(ProductSpecification::class, 'product_id');
+}
+
+public function orderSpecifications()
+{
+    return $this->hasMany(ProductOrderSpecification::class, 'product_id');
+}
+
 }

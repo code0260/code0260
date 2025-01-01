@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('title')->nullable();
-            $table->json('paragraphs')->nullable(); // مصفوفة تعبر عن الجمل الموصوفة
-            $table->json('images')->nullable(); ; // مصفوفة الصور الخاصة بالخاصية
+            $table->text('paragraphs')->nullable(); // مصفوفة تعبر عن الجمل الموصوفة
+            $table->text('images')->nullable(); ; // مصفوفة الصور الخاصة بالخاصية
             $table->bigInteger('product_id')->unsigned();
             //$table->string('description');  // الوصف الخاص بالخاصية
             $table->timestamps();

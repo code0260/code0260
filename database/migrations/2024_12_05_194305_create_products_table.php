@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            
+            $table->text('description')->nullable();           
+
             $table->enum('stock_status', ['active', 'inactive']);
             $table->boolean ('featured')->default(false);
             
