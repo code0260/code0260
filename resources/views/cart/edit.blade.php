@@ -32,19 +32,23 @@
             <div class="form-group">
                 <label for="stock_status">Stock Status</label>
                 <select name="stock_status" id="stock_status" class="form-control" disabled>
-                    <option value="active" {{ $item->options['stock_status'] === 'active' ? 'selected' : '' }}>Active
-                    </option>
-                    <option value="inactive" {{ $item->options['stock_status'] === 'inactive' ? 'selected' : '' }}>Inactive
-                    </option>
+                    <option value="active"
+                        {{ isset($item->options['stock_status']) && $item->options['stock_status'] === 'active' ? 'selected' : '' }}>
+                        Active</option>
+                    <option value="inactive"
+                        {{ isset($item->options['stock_status']) && $item->options['stock_status'] === 'inactive' ? 'selected' : '' }}>
+                        Inactive</option>
                 </select>
             </div>
+
 
             <!-- Featured field - غير قابل للتعديل -->
             <div class="form-group">
                 <label for="featured">Featured</label>
                 <input type="checkbox" name="featured" id="featured" value="1"
-                    {{ $item->options['featured'] ? 'checked' : '' }} disabled>
+                    {{ isset($item->options['featured']) && $item->options['featured'] ? 'checked' : '' }} disabled>
             </div>
+
 
             <!-- Specifications - قابل للتعديل فقط إذا رغبت -->
             <div class="form-group">

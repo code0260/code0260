@@ -32,7 +32,7 @@ class CartController extends Controller
             return [
                 'name' => $spec->name,
                 'title' => $spec->title,
-                'paragraphs' => is_string($spec->paragraphs) ? json_decode($spec->paragraphs, true) : $spec->paragraphs,
+                'paragraphs'  => $spec->paragraphs,
                 'images' => is_string($spec->images) ? json_decode($spec->images, true) : $spec->images,
             ];
         })->toArray();
@@ -326,8 +326,12 @@ class CartController extends Controller
         Cart::instance('cart')->update($rowId, [
             'qty' => $validated['qty'],
             'price' => $validated['price'],
-            'options' => $item->options, // تأكد من تحديث الخيارات أيضًا
+            'options' => array_merge((array)$item->options, [
+                'specifications' => $request->specifications, // Update specifications in cart
+            ]),
         ]);
+
+
 
         // تحديث المواصفات في قاعدة البيانات
         if ($request->has('specifications')) {

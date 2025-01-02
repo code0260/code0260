@@ -213,7 +213,7 @@ class AdminController extends Controller
                 // تحديث الحقول
                 $specification->name = $spec['name'];
                 $specification->title = $spec['title'] ?? null;
-                $specification->paragraphs = isset($spec['paragraphs']) ? json_encode($spec['paragraphs']) : null;
+                $specification->paragraphs = isset($spec['paragraphs']) ? $spec['paragraphs'] : null;
 
                 // إدارة الصور
                 $images = $specification->images ? json_decode($specification->images, true) : [];

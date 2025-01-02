@@ -1,4 +1,6 @@
 @extends('layouts.admin')
+
+
 @section('content')
     <div class="main-content-inner">
         <div class="main-content-wrap">
@@ -122,10 +124,17 @@
                                             <input type="text" name="specifications[{{ $specification->id }}][title]"
                                                 placeholder="Enter specification title"
                                                 value="{{ old('specifications.' . $specification->id . '.title', $specification->title) }}">
-
+                                            @php
+                                                $cleanParagraphs = stripslashes($specification['paragraphs']);
+                                            @endphp
                                             <label for="spec-paragraphs-{{ $specification->id }}">Specification
                                                 Paragraphs</label>
-                                            <textarea name="specifications[{{ $specification->id }}][paragraphs]" class="ckeditor" placeholder="Enter paragraphs">{{ $specification->paragraphs }}</textarea>
+                                            <textarea name="specifications[{{ $specification->id }}][paragraphs]" class="ckeditor" placeholder="Enter paragraphs">
+                                                    {!! $cleanParagraphs !!}
+                                                </textarea>
+
+
+
                                         </fieldset>
 
                                         <button type="button" class="remove-specification-btn"
