@@ -173,23 +173,25 @@ class CartController extends Controller
                 'price' => $item->price,
                 'product_name' => $product->name,
                 'quantity' => $item->qty,
-
-                'custom_specifications' => $product->specifications->toJson(), // تأكد من أن المواصفات موجودة في المنتج
+                'custom_specifications' => json_encode($item->options['specifications']), // Serialize the array
             ]);
 
-            foreach ($product->specifications as $spec) {
-                $images = is_string($spec->images) ? json_decode($spec->images, true) : [];
+
+            foreach ($item->options['specifications'] as $spec) {
+                // Access 'images' as an array key
+                $images = isset($spec['images']) && is_string($spec['images'])
+                    ? json_decode($spec['images'], true)
+                    : [];
 
                 $encodedImages = $this->encodeImages($images);
 
                 ProductOrderSpecification::create([
-                    'name' => $spec->name,
-                    'title' => $spec->title,
-                    'paragraphs' => json_encode($spec->paragraphs),
+                    'name' => $spec['name'] ?? null,
+                    'title' => $spec['title'] ?? null,
+                    'paragraphs' => $spec['paragraphs'] ?? null,
                     'images' => $encodedImages,
-                    'description' => $spec->description,
-                    'order_item_id' => $orderItem->id,  // إضافة order_item_id هنا
-
+                    'description' => $spec['description'] ?? null,
+                    'order_item_id' => $orderItem->id,
                     'product_id' => $item->id,
                 ]);
             }
