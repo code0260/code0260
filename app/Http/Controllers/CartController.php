@@ -116,7 +116,7 @@ class CartController extends Controller
             'city' => 'required',
             'address' => 'required',
             'locality' => 'required',
-            'landmark' => 'required',
+            'note' => 'required',
 
         ]);
 
@@ -130,7 +130,6 @@ class CartController extends Controller
         $address->city = $request->city;
         $address->address = $request->address;
         $address->locality = $request->locality;
-        $address->landmark = $request->landmark;
         $address->country = 'Syria';
         $address->user_id = $user_id;
         $address->isdefault = false;
@@ -159,7 +158,7 @@ class CartController extends Controller
         $order->city = $address->city;
         $order->state = $address->state;
         $order->country = $address->country;
-        $order->landmark = $address->landmark;
+        $order->note = $request->note;
         $order->zip = $address->zip;
         $order->save();
 

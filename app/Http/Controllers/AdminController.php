@@ -271,6 +271,21 @@ class AdminController extends Controller
         return view('admin.orders', compact('orders')); // تمرير المتغير إلى الـ View
     }
 
+    public function updateNote(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'note' => 'nullable|string',
+        ]);
+
+        $order = Order::findOrFail($request->order_id);
+        $order->note = $request->note;
+        $order->save();
+
+        return response()->json(['success' => true, 'message' => 'Note updated successfully.']);
+    }
+
+
 
     public function order_details($order_id)
     {
