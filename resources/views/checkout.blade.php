@@ -6,7 +6,7 @@
         <section class="shop-checkout container">
             <h2 class="page-title">Enter Customer Information</h2>
 
-            <form name="checkout-form" action="{{ route('cart.place.an.order') }}" method="POST">
+            <form name="checkout-form" action="{{ route('cart.place.an.order') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="checkout-form">
                     <div class="billing-info__wrapper">
@@ -93,6 +93,7 @@
                         </div>
 
                     </div>
+
                     <div class="checkout__totals-wrapper">
                         <div class="sticky-content">
                             <div class="checkout__totals">
@@ -176,6 +177,19 @@
                                 @endif
 
                             </div>
+
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="images">Upload Images</label>
+                                    <input type="file" class="form-control" name="images[]" id="images" multiple>
+                                    <small class="form-text text-muted">You can upload multiple images (JPG, PNG).</small>
+                                    @error('images.*')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
 
                             <button class="btn btn-primary btn-checkout">PLACE ORDER</button>
                         </div>

@@ -117,8 +117,21 @@ class CartController extends Controller
             'address' => 'required',
             'locality' => 'required',
             'note' => 'required',
+            'images' => 'nullable|array', // Validate as an array
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048', // Validate each file in the array
 
         ]);
+
+        $uploadedImages = [];
+        if ($request->hasFile('images')) {
+
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('orders/images', 'public'); // Store in the public disk
+                $uploadedImages[] = $path;
+            }
+        }
+
+
 
         // إضافة العنوان الجديد
         // إضافة العنوان الجديد للمستخدم
@@ -160,6 +173,8 @@ class CartController extends Controller
         $order->country = $address->country;
         $order->note = $request->note;
         $order->zip = $address->zip;
+        $order->images = $uploadedImages ? json_encode($uploadedImages) : null;
+
         $order->save();
 
 

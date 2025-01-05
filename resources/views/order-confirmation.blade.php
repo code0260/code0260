@@ -138,6 +138,21 @@
                             </tbody>
                         </table>
 
+                        <div class="order-images">
+                            <h3>Order Images</h3>
+                            <div class="image-gallery">
+                                @if (!empty($order->images))
+                                    @foreach (json_decode($order->images) as $image)
+                                        <img src="{{ asset('storage/' . $image) }}" alt="Order Image" width="100"
+                                            height="100" style="margin-right: 10px;">
+                                    @endforeach
+                                @else
+                                    <p>No images uploaded for this order.</p>
+                                @endif
+                            </div>
+                        </div>
+
+
 
                         <!-- Download PDF Button -->
                         <div class="checkout__pdf-button">
