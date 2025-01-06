@@ -17,6 +17,8 @@ use Carbon\Carbon;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Session;
+use Surfsidemedia\Shoppingcart\Facades\Cart;
 
 class AdminController extends Controller
 {
@@ -573,6 +575,7 @@ class AdminController extends Controller
         // تحديث عمود landmark لحفظ مسار PDF
         $order->landmark = 'uploads/orders/' . $fileName;
         $order->save();
+
 
         return response()->download($path . $fileName);
     }

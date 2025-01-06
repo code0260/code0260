@@ -82,10 +82,10 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="form-floating my-3">
-                                    <input type="text" class="form-control" name="note" required="">
-                                    <label for="note">Notes *</label>
-                                    @error('note')
+                                <div class="form-group my-3">
+                                    <label for="extra">Extras *</label>
+                                    <textarea class="form-control ckeditor" name="extra" id="extra" rows="5"></textarea>
+                                    @error('extra')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror
                                 </div>
@@ -199,3 +199,15 @@
         </section>
     </main>
 @endsection
+@push('scripts')
+    <script src="https://cdn.ckeditor.com/ckeditor5/34.1.0/classic/ckeditor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            ClassicEditor
+                .create(document.querySelector('#extra'))
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    </script>
+@endpush

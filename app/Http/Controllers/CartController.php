@@ -116,7 +116,7 @@ class CartController extends Controller
             'city' => 'required',
             'address' => 'required',
             'locality' => 'required',
-            'note' => 'required',
+            'extra' => 'required',
             'images' => 'nullable|array', // Validate as an array
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048', // Validate each file in the array
 
@@ -171,7 +171,7 @@ class CartController extends Controller
         $order->city = $address->city;
         $order->state = $address->state;
         $order->country = $address->country;
-        $order->note = $request->note;
+        $order->extra = $request->extra;
         $order->zip = $address->zip;
         $order->images = $uploadedImages ? json_encode($uploadedImages) : null;
 
@@ -220,8 +220,7 @@ class CartController extends Controller
         ]);
 
         // تفريغ السلة وتنظيف الجلسة
-        Cart::instance('cart')->destroy();
-        Session::forget(['checkout', 'coupon', 'discounts']);
+
         Session::put('order_id', $order->id);
 
         return redirect()->route('cart.order.confirmation');
@@ -270,16 +269,43 @@ class CartController extends Controller
         if (Session::has('order_id')) {
             $order = Order::find(Session::get('order_id'));
 
-            // استرجاع تفاصيل الطلب مع المواصفات المعدلة
-            $orderItems = OrderItem::with(['product.specifications' => function ($query) {
-                $query->orderBy('updated_at', 'desc');
-            }])->where('order_id', $order->id)->get();
+            if (!$order) {
+                return redirect()->route('cart.index')->with('error', 'Order not found');
+            }
+
+            // Fetch order items
+            $orderItems = OrderItem::where('order_id', $order->id)->get();
+
+            // Get all cart items
+            $cartItems = Cart::instance('cart')->content();
+
+            // Attach specifications and descriptions to order items
+            foreach ($orderItems as $item) {
+                foreach ($cartItems as $cartItem) {
+                    if ($cartItem->id == $item->product_id) { // Match product ID
+                        $specifications = $cartItem->options->specifications ?? [];
+
+                        // Ensure specifications are always an array
+                        if (!is_array($specifications)) {
+                            $specifications = json_decode($specifications, true);
+                        }
+
+                        $item->specifications = $specifications;
+                        $item->description = $cartItem->options->description ?? '';
+                        break;
+                    }
+                }
+            }
+
+            Cart::instance('cart')->destroy();
+            Session::forget(['checkout', 'coupon', 'discounts']);
 
             return view('order-confirmation', compact('order', 'orderItems'));
         }
 
         return redirect()->route('cart.index');
     }
+
 
 
 
@@ -336,63 +362,37 @@ class CartController extends Controller
         $validated = $request->validate([
             'qty' => 'required|integer|min:1',  // التحقق من الكمية
             'price' => 'required|numeric|min:0',  // التحقق من السعر
+            'description' => 'nullable|string',  // التحقق من الوصف
         ]);
 
-        // تحديث الكمية والسعر في السلة
-        Cart::instance('cart')->update($rowId, [
-            'qty' => $validated['qty'],
-            'price' => $validated['price'],
-            'options' => array_merge((array)$item->options, [
-                'specifications' => $request->specifications, // Update specifications in cart
-            ]),
-        ]);
+        $specifications = $request->specifications;
 
-
-
-        // تحديث المواصفات في قاعدة البيانات
-        if ($request->has('specifications')) {
-            foreach ($request->specifications as $spec) {
-                $images = isset($spec['images']) ? $spec['images'] : [];
-
-                // إذا كانت الصور موجودة، نقوم بتخزينها أولاً
-                if (isset($spec['images']) && count($spec['images']) > 0) {
-                    // رفع الصور وتخزين المسارات
+        if ($specifications && is_array($specifications)) {
+            foreach ($specifications as &$spec) {
+                if (isset($spec['images']) && is_array($spec['images'])) {
                     $imagePaths = [];
                     foreach ($spec['images'] as $image) {
-                        // تخزين الصور في المجلد المناسب
-                        $imagePaths[] = $image->store('specifications', 'public');
+                        if ($image instanceof \Illuminate\Http\UploadedFile) {
+                            $imagePaths[] = $image->store('specifications', 'public');
+                        }
                     }
-                    $images = $imagePaths; // تخزين المسارات الجديدة للصور
-                }
-
-                // البحث عن المواصفة الموجودة بناءً على order_item_id و name
-                $existingSpecification = ProductOrderSpecification::where('order_item_id', $item->id) // استخدام order_item_id هنا
-                    ->where('name', $spec['name'])
-                    ->first();
-
-                // إذا كانت المواصفة موجودة، نقوم بتحديثها
-                if ($existingSpecification) {
-                    $existingSpecification->update([
-                        'title' => $spec['title'],
-                        'paragraphs' => json_encode($spec['paragraphs']),
-                        'images' => json_encode($images),
-                    ]);
-                } else {
-                    // إذا كانت المواصفة غير موجودة، نقوم بإنشائها
-                    ProductOrderSpecification::create([
-                        'name' => $spec['name'],
-                        'title' => $spec['title'],
-                        'paragraphs' => json_encode($spec['paragraphs']),
-                        'images' => json_encode($images),
-                        'order_item_id' => $item->id, // استخدام id من السلة
-                        'product_id' => $item->id,    // استخدام id من السلة
-                    ]);
+                    $spec['images'] = $imagePaths;
                 }
             }
         }
 
+        Cart::instance('cart')->update($rowId, [
+            'qty' => $validated['qty'],
+            'price' => $validated['price'],
+            'options' => array_merge((array)$item->options, [
+                'specifications' => $specifications,
+                'description' => $validated['description'],
+            ]),
+        ]);
+
         return redirect()->route('cart.index')->with('success', 'Cart item updated successfully!');
     }
+
 
     private function encodeImages($images)
     {

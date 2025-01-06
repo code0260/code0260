@@ -114,6 +114,7 @@
                                     <th>Price</th>
                                     <th>Quantity</th>
                                     <th>Subtotal</th>
+                                    <th>Description</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -140,11 +141,12 @@
                                                     @if (!empty($spec['images']))
                                                         <div class="spec-images">
                                                             @foreach ($spec['images'] as $image)
-                                                                <img src="{{ asset('uploads/products/specifications/' . $image) }}"
-                                                                    alt="spec image" width="50" height="50">
+                                                                <img src="{{ asset('storage/' . $image) }}" alt="spec image"
+                                                                    width="50" height="50">
                                                             @endforeach
                                                         </div>
                                                     @endif
+
                                                 </div>
                                             @endforeach
 
@@ -181,6 +183,7 @@
                                             </div>
                                         </td>
                                         <td>${{ $item->subTotal() }}</td>
+                                        <td>{{ $item->options['description'] }}</td>
                                         <td>
                                             <form method="POST"
                                                 action="{{ route('cart.item.remove', ['rowId' => $item->rowId]) }}">

@@ -64,6 +64,17 @@
                             </tbody>
                         </table>
 
+                        <!-- Display Extras -->
+                        @if (!empty($order->extra))
+                            <div class="order-extras">
+                                <ul>
+                                    <li>
+                                        {!! $order->extra !!}
+                                    </li>
+                                </ul>
+                            </div>
+                        @endif
+
                         <h3>Product Specifications</h3>
                         <table class="checkout-cart-items">
                             <thead>
@@ -74,94 +85,73 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($order->orderItems as $item)
+                                @foreach ($orderItems as $item)
                                     <tr>
                                         <td>{{ $item->product->name }} x {{ $item->quantity }}</td>
                                         <td>
-                                            @foreach ($item->product->specifications as $spec)
-                                                <div class="specification">
-                                                    <strong>{{ $spec->name }}:</strong>
-                                                    <p>{{ $spec->title ?? 'No title' }}</p>
+                                            @if (!empty($item->specifications))
+                                                @foreach ($item->specifications as $spec)
+                                                    <div class="specification">
+                                                        <strong>{{ $spec['name'] ?? 'Specification' }}:</strong>
+                                                        <p>{{ $spec['title'] ?? 'No title' }}</p>
 
-                                                    <!-- Display paragraphs -->
-                                                    @foreach ($item->specifications as $spec2)
-                                                        {!! $spec2->paragraphs !!}
-                                                    @endforeach
+                                                        <!-- Display paragraphs -->
+                                                        @if (!empty($spec['paragraphs']))
+                                                            <p>{!! $spec['paragraphs'] !!}</p>
+                                                        @endif
 
-                                                    <!-- Display images -->
-                                                    @if (!empty($spec->images))
-                                                        <div class="spec-images">
-                                                            @foreach (json_decode($spec->images) as $image)
-                                                                <img src="{{ asset('uploads/products/specifications/' . $image) }}"
-                                                                    alt="spec image" width="100" height="100"
-                                                                    style="margin-right: 10px;">
-                                                            @endforeach
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            @endforeach
-
+                                                        <!-- Display images -->
+                                                        @if (!empty($spec['images']))
+                                                            <div class="spec-images">
+                                                                @foreach ($spec['images'] as $image)
+                                                                    <img src="{{ asset('storage/' . $image) }}"
+                                                                        alt="spec image" width="100" height="100"
+                                                                        style="margin-right: 10px;">
+                                                                @endforeach
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <p>No specifications available.</p>
+                                            @endif
                                         </td>
                                         <td class="text-right">${{ $item->price }}</td>
                                     </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <strong>Description:</strong>
+                                            <p>{{ $item->description }}</p>
+                                        </td>
+                                    </tr>
                                 @endforeach
-                                @foreach ($orderItems as $orderItem)
-                                    <div class="order-item">
-                                        <h4>{{ $orderItem->product_name }}</h4>
-                                        <ul>
-                                            @foreach ($orderItem->product->specifications as $spec)
-                                                <li>
-                                                    <strong>{{ $spec->name }}:</strong> {{ $spec->title }} <br>
-
-                                                    @if ($spec->paragraphs)
-                                                        <ul>
-                                                            @foreach ($item->specifications as $spec2)
-                                                                {!! $spec2->paragraphs !!}
-                                                            @endforeach
-                                                        </ul>
-                                                    @endif
-
-                                                    @if ($spec->images)
-                                                        <div class="spec-images">
-                                                            @foreach (json_decode($spec->images) as $image)
-                                                                <img src="{{ asset('storage/' . $image) }}"
-                                                                    alt="spec image" width="100">
-                                                            @endforeach
-                                                        </div>
-                                                    @endif
-                                                </li>
+                                <div class="order-images">
+                                    <h3>Order Images</h3>
+                                    <div class="image-gallery">
+                                        @if (!empty($order->images))
+                                            @foreach (json_decode($order->images) as $image)
+                                                <img src="{{ asset('storage/' . $image) }}" alt="Order Image"
+                                                    width="100" height="100" style="margin-right: 10px;">
                                             @endforeach
-                                        </ul>
+                                        @else
+                                            <p>No images uploaded for this order.</p>
+                                        @endif
                                     </div>
-                                @endforeach
-
+                                </div>
                             </tbody>
                         </table>
-
-                        <div class="order-images">
-                            <h3>Order Images</h3>
-                            <div class="image-gallery">
-                                @if (!empty($order->images))
-                                    @foreach (json_decode($order->images) as $image)
-                                        <img src="{{ asset('storage/' . $image) }}" alt="Order Image" width="100"
-                                            height="100" style="margin-right: 10px;">
-                                    @endforeach
-                                @else
-                                    <p>No images uploaded for this order.</p>
-                                @endif
-                            </div>
-                        </div>
-
-
-
-                        <!-- Download PDF Button -->
-                        <div class="checkout__pdf-button">
-                            <a href="{{ route('order.downloadPdf', ['orderId' => $order->id]) }}"
-                                class="btn btn-primary">Download Order PDF</a>
-                        </div>
-
                     </div>
                 </div>
+            </div>
+
+            <!-- Order Images -->
+
+
+            <!-- Download PDF Button at the end -->
+            <div class="checkout__pdf-button mt-4 text-center">
+                <a href="{{ route('order.downloadPdf', ['orderId' => $order->id]) }}" class="btn btn-primary">
+                    Download Order PDF
+                </a>
             </div>
         </section>
     </main>

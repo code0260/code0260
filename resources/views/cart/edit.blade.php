@@ -41,6 +41,12 @@
                 </select>
             </div>
 
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" name="description" id="description" class="form-control"
+                    value="{{ $item->options['description'] }}">
+            </div>
+
 
             <!-- Featured field - غير قابل للتعديل -->
             <div class="form-group">
