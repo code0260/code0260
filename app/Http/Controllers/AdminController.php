@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Category;
 
 use App\Models\Product;
@@ -146,9 +147,9 @@ class AdminController extends Controller
 
     {
         $product = Product::orderBy('created_at', 'DESC')->first();
-        $categories = Category:: select('id', 'name')->orderBy('name')->get();
+        $categories = Category::select('id', 'name')->orderBy('name')->get();
 
-        return view('admin.product-add', compact('categories','product'));
+        return view('admin.product-add', compact('categories', 'product'));
     }
 
 
@@ -160,7 +161,7 @@ class AdminController extends Controller
             'name' => 'required',
             'stock_status' => 'required|in:active,inactive',
             'description' => 'nullable',
-'category_id' => 'required',
+            'category_id' => 'required',
 
             'featured' => 'nullable|boolean',
             'specifications.*.name' => 'required|string',
@@ -230,8 +231,9 @@ class AdminController extends Controller
     {
         $product = Product::find($id);
         $specifications = ProductSpecification::where('product_id', $id)->get();
+        $categories = Category::select('id', 'name')->orderBy('name')->get();
 
-        return view('admin.product-edit', compact('product', 'specifications'));
+        return view('admin.product-edit', compact('product', 'specifications', 'categories'));
     }
 
     public function product_update(Request $request)
@@ -557,38 +559,38 @@ class AdminController extends Controller
     {
         // الحصول على تاريخ اليوم
         $date = Carbon::now()->format('ymd');
-    
+
         // تحديد كود نوع المنتج بناءً على الاسم أو معايير أخرى
         //$productType = $this->getProductCodeByName($request->name);
-    
+
         // الحصول على كود الفئة من قاعدة البيانات بناءً على الـ category_id
         $categoryCode = Category::find($request->category_id)->code;
-    
+
         // الحصول على رقم الموظف
         $employeeId = str_pad(Auth::user()->id, 3, '0', STR_PAD_LEFT);
-    
+
         // تحديد الرقم التسلسلي
         $sequence = Product::whereDate('created_at', Carbon::today())->count() + 1;
         $sequenceFormatted = str_pad($sequence, 3, '0', STR_PAD_LEFT);
-    
+
         // صياغة الريفرنس كود الأساسي ليشمل كود الفئة
         $baseReferenceCode = "{$date}-{$categoryCode}-{$employeeId}-{$sequenceFormatted}";
         $referenceCode = $baseReferenceCode;
-    
+
         $counter = 1;
-    
+
         // التأكد من أن الكود فريد
         while (Product::where('slug', $referenceCode)->exists()) {
             $referenceCode = "{$baseReferenceCode}-{$counter}";
             $counter++;
         }
-    
+
         return $referenceCode;
     }
-    
+
 
     // دالة جديدة للحصول على كود نوع المنتج بناءً على الاسم
-  
+
 
 
 
