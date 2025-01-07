@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('content')
+@section('content') 
     <style>
         .table> :not(caption)>tr>th {
             padding: 0.625rem 1.5rem .625rem !important;
-            background-color: #6a6e51 !important;
+            background-color: #109faf !important;
         }
 
         .table>tr>td {
@@ -13,7 +13,7 @@
         .table-bordered> :not(caption)>tr>th,
         .table-bordered> :not(caption)>tr>td {
             border-width: 1px 1px;
-            border-color: #6a6e51;
+            border-color: #109faf;
         }
 
         .table> :not(caption)>tr>td {
@@ -25,7 +25,7 @@
         }
 
         .bg-danger {
-            background-color: #f44032 !important;
+            background-color: #cf0c0c !important;
         }
 
         .bg-warning {

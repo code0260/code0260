@@ -38,7 +38,7 @@
     }
 
     .bg-danger {
-      background-color: #f44032 !important;
+      background-color: #cf0c0c !important;
     }
 
     .bg-warning {
@@ -59,7 +59,7 @@
 
     .table> :not(caption)>tr>th {
       padding: 0.625rem 1.5rem .25rem !important;
-      background-color: #6a6e51 !important;
+      background-color: #109faf !important;
     }
 
     .table-bordered>:not(caption)>*>* {
@@ -94,8 +94,34 @@
     .table-bordered> :not(caption)>tr>th,
     .table-bordered> :not(caption)>tr>td {
       border-width: 1px 1px;
-      border-color: #6a6e51;
+      border-color: #109faf;
     }
+    .btn-custom-black {
+    background-color: #000; /* لون الخلفية أسود */
+    color: #fff; /* لون النص أبيض */
+    border: 1px solid #000; /* حدود الزر أسود */
+}
+
+.btn-custom-black:hover {
+    background-color: #333; /* لون الخلفية عند التمرير */
+    color: #fff; /* لون النص */
+    transform: scale(1.05); /* تكبير الزر قليلاً عند التمرير */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.btn-custom-black {
+    background-color: #000; /* لون الخلفية أسود */
+    color: #fff; /* لون النص أبيض */
+    border: 1px solid #000; /* حدود الزر أسود */
+}
+
+.btn-custom-black:hover {
+    background-color: #333; /* لون الخلفية عند التمرير */
+    color: #fff; /* لون النص */
+    transform: scale(1.05); /* تأثير تكبير خفيف */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+    
   </style>
     <main class="pt-90" style="padding-top: 0px;">
         <div class="mb-4 pb-4"></div>
@@ -118,7 +144,7 @@
 
     </div>
     <div class="col-6 text-right">
-        <a class="btn btn-sm btn-danger" href="{{route('user.orders')}}">Back</a>
+        <a class="btn btn-sm btn-custom-black" href="{{route('user.orders')}}">Back</a>
 
     </div>
 </div>
@@ -261,7 +287,7 @@
                         
                             <input type="hidden" name="order_id" value="{{ $order->id }}" />
                         
-                            <button type="button" class="btn btn-danger cancel-order">Cancel Order</button>
+                            <button type="button" class="btn btn-custom-black cancel-order">Cancel Order</button>
                         
                         </form>
                         
