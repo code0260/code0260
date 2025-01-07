@@ -73,7 +73,10 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary modern-btn">Save Changes</button>
+            <!-- زر في النص -->
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-primary modern-btn">Save Changes</button>
+            </div>
         </form>
     </div>
 @endsection
@@ -123,6 +126,11 @@
     .form-group label {
         font-weight: bold;
         color: #333;
+    }
+
+    /* توسيط الزر */
+    .form-group.text-center {
+        text-align: center;
     }
 </style>
 @endpush
