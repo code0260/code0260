@@ -27,6 +27,13 @@
         word-wrap: break-word; /* يسمح للنص بالانكسار عند الحاجة */
         word-break: break-word; /* تكسير الكلمة إذا كانت طويلة جدًا */
     }
+    <style>
+    .btn-primary:hover {
+        background-color: #168f9c; /* فيروزي داكن */
+        transform: scale(1.05); /* تكبير الزر قليلاً */
+    }
+</style>
+
 </style>
 
 <main class="pt-90">
@@ -172,10 +179,11 @@
 
         <!-- Download PDF Button at the end -->
         <div class="checkout__pdf-button mt-4 text-center">
-            <a href="{{ route('order.downloadPdf', ['orderId' => $order->id]) }}" class="btn btn-primary">
+            <a href="{{ route('order.downloadPdf', ['orderId' => $order->id]) }}" class="btn btn-primary" style="background-color: #109faf; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; text-decoration: none; transition: transform 0.3s ease, background-color 0.3s ease;">
                 Download Order PDF
             </a>
         </div>
+        
     </section>
 </main>
 @endsection
