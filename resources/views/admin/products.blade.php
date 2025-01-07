@@ -47,6 +47,8 @@
                            
                             <th>Reference Code</th>
                              <th>Status</th>
+                             <th> Product Type </th>
+
                              <th>Action</th>
                         </tr>
                     </thead>
@@ -72,7 +74,8 @@
                                     <span class="badge bg-warning">Unknown</span>
                                 @endif
                             </td>
-                                                       
+                            <td>{{ $product->category->name ?? 'N/A' }}</td>
+                     
                             <td>
                                 <div class="list-icon-function">
                                     <a href="{{route('shop.product.details',['product_slug'=>$product->slug])}}" target="_blank">

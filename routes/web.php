@@ -8,7 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
- 
+
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('home.index');
@@ -25,7 +25,7 @@ Route::put('/cart/update-price/{rowId}', [CartController::class, 'update_price']
 Route::delete('/cart/remove/{rowId}', [CartController::class, 'remove_item'])->name('cart.item.remove');
 Route::delete('/cart/clear', [CartController::class, 'empty_cart'])->name('cart.empty');
 
- 
+
 // في ملف routes/web.php
 Route::get('cart/{rowId}/edit', [CartController::class, 'edit_cart_item'])->name('cart.edit');
 Route::prefix('cart')->group(function () {
@@ -37,12 +37,12 @@ Route::get('/order/{orderId}/download-pdf', [CartController::class, 'downloadPdf
 
 //Route::put('/cart/specifications/update/{rowId}/{specIndex}', [CartController::class, 'updateSpecifications'])->name('cart.specifications.update');
 
- 
+
 
 Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
 Route::post('/place-an-order', [CartController::class, 'place_an_order'])->name('cart.place.an.order');
 Route::get('/order-confirmation', [CartController::class, 'order_confirmation'])->name('cart.order.confirmation');
- 
+
  Route::get('/search', [HomeController::class, 'search'])->name('home.search');
 
 
@@ -65,6 +65,14 @@ Route::post('/admin/generate-reference-code', [AdminController::class, 'generate
 
 
 
+Route::get('/admin/categories', [AdminController::class, 'categories'])->name('admin.categories');
+Route::get('/admin/category/add', [AdminController::class, 'category_add'])->name('admin.category.add');
+Route::post('/admin/category/store', [AdminController::class, 'category_store'])->name('admin.category.store');
+Route::get('/admin/category/edit/{id}', [AdminController::class, 'category_edit'])->name('admin.category-edit');
+Route::put('/admin/category/update', [AdminController::class, 'category_update'])->name('admin.category.update');
+Route::delete('/admin/category/{id}/delete', [AdminController::class, 'category_delete'])->name('admin.category.delete');
+
+
 Route::get('/admin/products', [AdminController::class, 'products'])->name('admin.products');
 Route::get('/admin/product/add', [AdminController::class, 'product_add'])->name('admin.product.add');
 Route::post('/admin/product/store', [AdminController::class, 'product_store'])->name('admin.product.store');
@@ -76,6 +84,8 @@ Route::delete('/admin/product/{id}/delete', [AdminController::class, 'product_de
 
 
 Route::get('/admin/orders',[AdminController::class,'orders'])->name('admin.orders');
+
+Route::post('/admin/orders/update-note', [AdminController::class, 'updateNote'])->name('admin.orders.updateNote');
 
 Route::get('/admin/order/{order_id}/details',[AdminController::class,'order_details'])->name('admin.order.details');
 Route::put('/admin/order/update-status',[AdminController::class,'update_order_status'])->name('admin.order.status.update');

@@ -42,5 +42,8 @@ public function orderSpecifications()
 {
     return $this->hasMany(ProductOrderSpecification::class, 'product_id');
 }
-
+public function category()
+{
+ return $this->belongsTo (Category::class, 'category_id');
+}
 }

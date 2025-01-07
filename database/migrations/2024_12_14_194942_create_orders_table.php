@@ -18,22 +18,25 @@ return new class extends Migration
             $table->decimal('subtotal');
             $table->string('note')->nullable();
             $table->decimal('discount')->default(0);
-            $table->decimal('tax');
+            $table->decimal('tax')->nullable();
             $table->decimal('total');
-            $table->string('name');
-            $table->string('phone');
-            $table->string('locality');
-            $table->text('address');
-            $table->string('city');
-            $table->string('state');
-            $table->string('country');
+            $table->string('name')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('locality')->nullable();
+            $table->text('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
             $table->string('landmark')->nullable();
-            $table->string('zip');
+            $table->string('zip')->nullable();
             $table->string('type')->default('home');
             $table->enum('status', ['ordered', 'delivered', 'canceled'])->default('ordered');
             $table->boolean('is_shipping_different')->default(false);
             $table->date('delivered_date')->nullable();
             $table->date('canceled_date')->nullable();
+            $table->json('images')->nullable();
+            $table->text('extra')->nullable();
+
             $table->timestamps();
             $table->foreign('user_id')->references ('id')->on('users')->onDelete('cascade');
 

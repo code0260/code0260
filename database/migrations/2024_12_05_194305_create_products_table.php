@@ -21,7 +21,10 @@ return new class extends Migration
             $table->boolean ('featured')->default(false);
             
             $table->timestamp('adding_date')->nullable();
+            $table->bigInteger('category_id')->unsigned()->nullable();        
+
             $table->timestamps(); // هذا يضيف created_at و updated_at
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');       
 
         });
     }

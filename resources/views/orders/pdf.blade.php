@@ -131,11 +131,10 @@
             <div>
                 <p><strong>{{ $spec->name }}:</strong> {{ $spec->title ?? 'No title' }}</p>
 
-                <!-- عرض الفقرات -->
-                @foreach (json_decode($spec->paragraphs) as $paragraph)
-                <p>{{ $paragraph }}</p>
-                @endforeach
-
+                <!-- Display paragraphs -->
+                @if (!empty($spec['paragraphs']))
+                <p>{!! $spec['paragraphs'] !!}</p>
+            @endif
                 <!-- عرض الصور -->
                 @if (!empty($spec->images))
                 <div class="spec-images">

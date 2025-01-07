@@ -13,6 +13,7 @@
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
         "laravel/ui": "^4.6",
+        "nesbot/carbon": "^3.8",
         "surfsidemedia/shoppingcart": "^1.0"
     },
     "require-dev": {

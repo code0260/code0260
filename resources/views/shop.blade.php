@@ -1,47 +1,123 @@
 @extends('layouts.app')
 @section('content')
 <style>
-
-/* تنسيق الجدول */
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-/* تنسيق الأعمدة */
-td {
-    padding: 12px;
-    vertical-align: middle;
-}
-
-/* محاذاة اسم المنتج في العمود الأول إلى اليسار */
-.product-name {
-    text-align: left; /* محاذاة النص إلى اليسار */
-}
-
-/* محاذاة الأزرار في العمود الثاني إلى اليمين */
-.action-buttons {
-    text-align: right; /* محاذاة الأزرار إلى اليمين */
-}
-/* محاذاة نص الأكشن إلى اليمين */
-th {
-    text-align: right; /* محاذاة النص إلى اليمين */
-}
-
-/* محاذاة الأزرار داخل الخلايا */
-.action-buttons {
-    text-align: right; /* محاذاة الأزرار إلى اليمين */
-}
-
-/* تنسيق الأزرار داخل الخلايا */
-button {
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-</style>
-
+  table {
+     width: 100%; /* عرض الجدول بالكامل */
+     border-collapse: collapse;
+     margin-bottom: 20px;
+     border-radius: 8px;
+     overflow: hidden;
+ }
+ 
+ /* تنسيق الرأس */
+ th {
+     background-color: #007bff; /* اللون الأزرق */
+     color: white;
+     padding: 12px;
+     font-weight: bold;
+     text-align: left;
+ }
+ 
+ /* تنسيق الأعمدة */
+ td {
+     padding: 12px;
+     vertical-align: middle;
+     border-bottom: 1px solid #ddd; /* خط يفصل بين الصفوف */
+ }
+ 
+ /* محاذاة اسم المنتج في العمود الأول إلى اليسار */
+ .product-name {
+     text-align: left;
+     font-weight: 500;
+     color: #333;
+ }
+ 
+ /* محاذاة الأزرار في العمود الثاني إلى المنتصف */
+ .action-buttons {
+     text-align: right;
+ }
+ 
+ /* محاذاة نص الأكشن إلى اليمين */
+ th {
+     text-align: left;
+ }
+ 
+ /* تنسيق الأزرار */
+ button,
+ .btn {
+     padding: 10px 20px;
+     border-radius: 4px;
+     font-size: 14px;
+     background-color: #109faf; /* اللون الأزرق */
+     color: rgb(0, 0, 0);
+     border: none;
+     transition: background-color 0.3s ease, transform 0.3s ease;
+ }
+ 
+ /* تأثير عند التمرير فوق الأزرار */
+ button:hover,
+ .btn:hover {
+     background-color: #109faf;
+     transform: scale(1.05);
+ }
+ 
+ /* تنسيق الأزرار عند التمكين */
+ button:disabled,
+ .btn:disabled {
+     background-color: #ccc;
+     color: #666;
+     cursor: not-allowed;
+ }
+ /* تنسيق زر "Go To Order" */
+ .btn-warning {
+     background-color: #109faf; /* اللون الفيروزي */
+     border-color: #109faf; /* اللون الفيروزي */
+ }
+ 
+ .btn-warning:hover {
+     background-color: #109faf; /* لون فيروزي أفتح قليلاً عند التمرير */
+     border-color: #109faf; /* نفس اللون في حالة التمرير */
+ }
+ 
+ 
+ /* تحسين ظهور الصفوف عند التمرير عليها */
+ tr:hover {
+     background-color: #f1f1f1;
+ }
+ 
+ /* تنسيق جدول عند عدم وجود منتجات */
+ .table-empty {
+     text-align: center;
+     font-size: 18px;
+     color: #888;
+     padding: 50px 0;
+ }
+ 
+ /* التأكد من تنسيق عرض الجدول على الشاشة بأكملها */
+ .shop-list {
+     width: 100%; /* تأكد من أن الحاوية تأخذ العرض الكامل */
+     overflow-x: auto; /* التأكد من إمكانية التمرير الأفقي إذا كانت الأعمدة كبيرة */
+ }
+ </style>
+ <style>
+   th {
+       background-color: #168f9c !important; /* اللون الفيروزي خلفية */
+       color: white !important; /* النص أبيض */
+       border: 2px solid #168f9c!important; /* الحدود باللون الفيروزي */
+       padding: 12px !important; /* لضبط المسافة داخل العنصر */
+       text-align: left !important; /* محاذاة العمود الأول لليسار */
+   }
+ 
+   th:last-child {
+       text-align: right !important; /* محاذاة العمود الأخير (Actions) لليمين */
+   }
+ 
+   th:hover {
+       background-color:  #109faf !important; /* تغيير الخلفية عندما يمر الفأرة فوق العنصر */
+       border-color: #109faf  !important; /* تغيير اللون عند المرور */
+   }
+ </style>
+ 
 <main class="pt-90">
     <section class="shop-main container d-flex pt-4 pt-xl-5"> 
       <div class="shop-sidebar side-sticky bg-body" id="shopFilter">
