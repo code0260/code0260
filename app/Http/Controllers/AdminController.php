@@ -230,8 +230,9 @@ class AdminController extends Controller
     {
         $product = Product::find($id);
         $specifications = ProductSpecification::where('product_id', $id)->get();
+        $categories= Category::select('id', 'name')->orderBy('name')->get();
 
-        return view('admin.product-edit', compact('product', 'specifications'));
+        return view('admin.product-edit', compact('product', 'specifications', 'categories'));
     }
 
     public function product_update(Request $request)
