@@ -1,5 +1,23 @@
 @extends('layouts.app')
 
+<style>
+
+
+.btn-primary {
+    background-color: #109faf;
+    color: white;
+    border: none;
+    font-size: 16px;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.btn-primary:hover {
+    background-color: #168f9c;
+    transform: scale(1.05);
+}
+</style>
+
 @section('content')
 <main class="pt-90">
     <div class="mb-4 pb-4"></div>
@@ -47,8 +65,10 @@
                             </label>
                         </div>
 
-                        <button class="btn btn-primary w-100 text-uppercase" type="submit">Log In</button>
-
+                        <button class="btn btn-primary w-100 text-uppercase" type="submit" style="background-color: #109faf; color: white; border: none; font-size: 16px; padding: 10px 20px; border-radius: 5px;">
+                            Log In
+                        </button>
+                        
                         <div class="customer-option mt-4 text-center">
                             <span class="text-secondary">No account yet?</span>
                             <a href="{{ route('register') }}" class="btn-text js-show-register">Create Account</a> |
