@@ -176,9 +176,8 @@
                                 <tr>
                                     <th>Product</th>
                                     <th>Specifications</th>
-                                    <th>Price</th>
-                                    <th>Quantity</th>
-                                    <th>Subtotal</th>
+                                     
+                                    <th>Total</th>
                                     <th>Description</th>
                                     <th>Action</th>
                                 </tr>
@@ -216,37 +215,8 @@
                                             @endforeach
 
                                         </td>
-                                        <td>
-                                            <span class="shopping-cart__product-price">${{ $item->price }}</span>
-                                            <form method="POST"
-                                                action="{{ route('cart.price.update', ['rowId' => $item->rowId]) }}"
-                                                style="display:inline;">
-                                                @csrf
-                                                @method('PUT')
-                                                <div class="d-flex align-items-center">
-                                                    <input type="number" name="price" value="{{ $item->price }}"
-                                                        step="0.01" class="form-control form-control-sm"
-                                                        style="width: 80px; margin-right: 5px;">
-                                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
-                                                </div>
-                                            </form>
-                                        </td>
-                                        <td>
-                                            <div class="qty-control">
-                                                <form method="POST"
-                                                    action="{{ route('cart.qty.decrease', ['rowId' => $item->rowId]) }}">
-                                                    @csrf @method('PUT')
-                                                    <button class="btn btn-primary">-</button>
-                                                </form>
-                                                <input type="number" class="qty-control__number"
-                                                    value="{{ $item->qty }}">
-                                                <form method="POST"
-                                                    action="{{ route('cart.qty.increase', ['rowId' => $item->rowId]) }}">
-                                                    @csrf @method('PUT')
-                                                    <button class="btn btn-primary">+</button>
-                                                </form>
-                                            </div>
-                                        </td>
+                                          
+                                         
                                         <td>${{ $item->subTotal() }}</td>
                                         <td>{{ $item->options['description'] }}</td>
                                         <td>

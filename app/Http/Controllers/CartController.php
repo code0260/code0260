@@ -275,7 +275,7 @@ class CartController extends Controller
 
             // Fetch order items
             $orderItems = OrderItem::where('order_id', $order->id)->get();
-
+ 
             // Get all cart items
             $cartItems = Cart::instance('cart')->content();
 
