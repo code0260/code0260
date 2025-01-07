@@ -16,32 +16,46 @@ class ShopController extends Controller
         $o_column = "";
         $o_order = "";
         $order = $request->query('order') ? $request->query('order') : -1;
-
-        // تحديد ترتيب المنتجات بناءً على الـ order
+        $f_categories = $request->query('categories'); // التصنيفات فقط
+    
+        // ترتيب النتائج حسب الخيارات
         switch ($order) {
             case 1:
                 $o_column = 'created_at';
                 $o_order = 'DESC';
                 break;
-
             case 2:
                 $o_column = 'created_at';
                 $o_order = 'ASC';
                 break;
-
+            case 3:
+                $o_column = 'sale_price';
+                $o_order = 'ASC';
+                break;
+            case 4:
+                $o_column = 'sale_price';
+                $o_order = 'DESC';
+                break;
             default:
                 $o_column = 'id';
                 $o_order = 'DESC';
         }
-
-        // استعلام المنتجات مع تحميل المواصفات
-        $products = Product::with('specifications')  // تحميل المواصفات
-            ->orderBy($o_column, $o_order)
-            ->paginate($size);
-
-        return view('shop', compact('products', 'size', 'order'));
+    
+        // جلب قائمة التصنيفات
+        $categories = Category::orderBy('name', 'ASC')->get();
+    
+        // تصفية المنتجات بناءً على التصنيفات فقط
+        $products = Product::where(function ($query) use ($f_categories) {
+            $query->whereIn('category_id', explode(',', $f_categories))
+                  ->orWhereRaw("'" . $f_categories . "' = ''");
+        })
+        ->orderBy($o_column, $o_order)
+        ->paginate($size);
+    
+        // تمرير البيانات إلى العرض
+        return view('shop', compact('products', 'size', 'order', 'categories', 'f_categories'));
     }
-
+    
     public function product_details($product_slug)
     {
         // استعلام المنتج بناءً على الـ slug مع تحميل المواصفات

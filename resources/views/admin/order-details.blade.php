@@ -168,28 +168,27 @@
             
             <div class="row">
             
-            <div class="col-md-3">
-            
-            <select id="order_status" name="order_status">
-            
-            <option value="ordered" {{ $order->status == 'ordered' ? 'selected' : '' }}>Ordered</option>
-            
-            <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
-            
-            <option value="canceled" {{ $order->status == 'canceled' ? 'selected' : '' }}>Canceled</option>
-            
-            </select>
-            
-            </div>
-            
-            <div class="col-md-3">
-            
-            <button type="submit" class="btn btn-primary tf-button w208">Update Status</button>
-            
-            </div>
-            <a href="{{ route('admin.order.generate.pdf', $order->id) }}" class="btn btn-primary">Generate PDF</a>
-
-            </div>
+                <div class="col-md-3">
+                
+                <select id="order_status" name="order_status">
+                
+                <option value="ordered" {{ $order->status == 'ordered' ? 'selected' : '' }}>Ordered</option>
+                
+                <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                
+                <option value="canceled" {{ $order->status == 'canceled' ? 'selected' : '' }}>Canceled</option>
+                
+                </select>
+                
+                </div>
+                
+                <div class="col-md-3">
+                
+                <button type="submit" class="btn btn-primary tf-button w208">Update Status</button>
+                
+                </div>
+                
+                </div>
             
             </form>
             
