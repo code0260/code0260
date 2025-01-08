@@ -179,11 +179,32 @@
 
         <!-- Download PDF Button at the end -->
         <div class="checkout__pdf-button mt-4 text-center">
-            <a href="{{ route('order.downloadPdf', ['orderId' => $order->id]) }}" class="btn btn-primary" style="background-color: #109faf; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; text-decoration: none; transition: transform 0.3s ease, background-color 0.3s ease;">
+            <a 
+                href="{{ route('order.downloadPdf', ['orderId' => $order->id]) }}" 
+                class="btn btn-primary" 
+                id="downloadPdfButton"
+                style="background-color: #109faf; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; text-decoration: none; transition: transform 0.3s ease, background-color 0.3s ease;" 
+                onclick="disableButton(event)">
                 Download Order PDF
             </a>
         </div>
         
+        
     </section>
 </main>
 @endsection
+@push('scripts')   
+
+<script>
+    function disableButton(event) {
+        const button = event.currentTarget;
+        
+        // Disable the button to prevent multiple clicks
+        button.style.pointerEvents = 'none'; // Prevent further clicks
+        button.style.opacity = '0.6'; // Make the button appear disabled
+        
+        // Optionally, you can add a loading spinner or text
+        button.innerHTML = 'Processing...';
+    }
+</script>
+@endpush

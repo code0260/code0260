@@ -339,9 +339,9 @@
         <div class="container">
           <div class="overflow-hidden">
             <ul class="navigation__list list-unstyled position-relative">
-              <li class="navigation__item">
+              {{--<li class="navigation__item">
                 <a href="{{route('home.index')}}" class="navigation__link">Home</a>
-              </li>
+              </li>--}}
               <li class="navigation__item">
                 <a href="{{route('shop.index')}}" class="navigation__link">Product</a>
               </li>
@@ -423,9 +423,9 @@
   
           <nav class="navigation">
             <ul class="navigation__list list-unstyled d-flex">
-              <li class="navigation__item">
+              {{--<li class="navigation__item">
                 <a href="{{route('home.index')}}" class="navigation__link">Home</a>
-              </li>
+              </li>--}}
               <li class="navigation__item">
                 <a href="{{route('shop.index')}}" class="navigation__link">product</a>
               </li>

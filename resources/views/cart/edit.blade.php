@@ -1,4 +1,5 @@
-@extends('layouts.app') 
+@extends('layouts.app')
+
 @section('content')
     <div class="container">
         <h1>Edit Cart Item</h1>
@@ -67,7 +68,16 @@
                             </textarea>
 
                             <label for="specifications[{{ $index }}][images]">Images</label>
-                            <input type="file" name="specifications[{{ $index }}][images][]" class="form-control modern-input" multiple @if (isset($specification['images'])) value="{{ implode(', ', $specification['images']) }}" @endif>
+<div class="gallery-preview">
+    @foreach ($specification['images'] ?? [] as $image)
+        <div class="gitems">
+            <img src="{{ asset('uploads/specifications/' . $image) }}" alt="Specification Image">
+            <button type="button" class="remove-old-image-btn" data-image="{{ $image }}">X</button>
+        </div>
+    @endforeach
+</div>
+<input type="file" name="specifications[{{ $index }}][images][]" class="form-control modern-input" multiple>
+
                         </div>
                     @endforeach
                 </div>
@@ -132,6 +142,36 @@
     .form-group.text-center {
         text-align: center;
     }
+
+    .gallery-preview {
+        margin-bottom: 10px;
+    }
+
+    .gitems {
+        display: inline-block;
+        margin-right: 10px;
+        position: relative;
+    }
+
+    .gitems img {
+        max-width: 150px;
+        max-height: 150px;
+        border-radius: 5px;
+    }
+
+    .remove-old-image-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        cursor: pointer;
+    }
 </style>
 @endpush
 
@@ -146,6 +186,12 @@
                 .catch(error => {
                     console.error(error);
                 });
+        });
+
+        // Remove old images on click
+        $(document).on('click', '.remove-old-image-btn', function() {
+            var imageDiv = $(this).closest('.gitems');
+            imageDiv.remove();
         });
     });
 </script>

@@ -110,12 +110,12 @@ class CartController extends Controller
         $user_id = Auth::user()->id;
         $request->validate([
             'name' => 'required|max:100',
-            'phone' => 'required|digits:10',
-            'zip' => 'required|digits:6',
-            'state' => 'required',
-            'city' => 'required',
-            'address' => 'required',
-            'locality' => 'required',
+            'phone' => 'nullable|digits:10',
+            'zip' => 'nullable|digits:6', 
+            'state' => 'nullable',
+            'city' => 'nullable',
+            'address' => 'nullable',
+            'locality' => 'nullable',
             'extra' => 'required',
             'images' => 'nullable|array', // Validate as an array
             'images.*' => 'image|mimes:jpg,jpeg,png|max:2048', // Validate each file in the array
@@ -137,13 +137,13 @@ class CartController extends Controller
         // إضافة العنوان الجديد للمستخدم
         $address = new Address();
         $address->name = $request->name;
-        $address->phone = $request->phone;
-        $address->zip = $request->zip;
-        $address->state = $request->state;
-        $address->city = $request->city;
-        $address->address = $request->address;
-        $address->locality = $request->locality;
-        $address->country = 'Syria';
+        $address->phone =$request->phone;
+        $address->zip = '00000';
+        $address->state = '02135';
+        $address->city = 'Mashru Dummar';
+        $address->address = 'Mashru Dummar';
+        $address->locality = 'Mashru Dummar';
+        $address->country =  $request->country;
         $address->user_id = $user_id;
         $address->isdefault = false;
         $address->save();
@@ -297,7 +297,6 @@ class CartController extends Controller
                 }
             }
 
-            Cart::instance('cart')->destroy();
             Session::forget(['checkout', 'coupon', 'discounts']);
 
             return view('order-confirmation', compact('order', 'orderItems'));
@@ -413,7 +412,7 @@ class CartController extends Controller
         return null;
     }
 
-    public function downloadPdf($orderId)
+    /*public function downloadPdf($orderId)
     {
         $order = Order::findOrFail($orderId);
 
@@ -425,6 +424,28 @@ class CartController extends Controller
             'base64EncodeImage' => [$this, 'base64EncodeImage']
         ]);
 
+
+        return $pdf->download('order_' . $order->id . '.pdf');
+    }*/
+    public function downloadPdf($orderId)
+    {
+        // جلب الطلب
+        $order = Order::findOrFail($orderId);
+        $cartItems = Cart::instance('cart')->content();
+
+        // جلب عناصر الطلب مع مواصفات المنتج و reference code
+        $orderItems = OrderItem::with(['product' => function ($query) {
+            $query->select('id', 'name', 'slug'); // تأكد من تحديد الحقول المطلوبة فقط
+        }])->where('order_id', $order->id)->get();
+        // تحميل ملف PDF
+        $pdf = PDF::loadView('orders.pdf', [
+            'order' => $order,
+            'orderItems' => $orderItems,
+            'cartItems' => $cartItems, // تمرير cartItems هنا
+
+            'base64EncodeImage' => [$this, 'base64EncodeImage']
+        ]);
+        Cart::instance('cart')->destroy();
 
         return $pdf->download('order_' . $order->id . '.pdf');
     }

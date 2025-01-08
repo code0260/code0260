@@ -148,16 +148,25 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6"> 
                             <div class="form-floating my-3">
                                 <input type="text" class="form-control" name="phone" required="">
                                 <label for="phone">Phone Number *</label>
                                 @error('phone')
                                     <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                                @enderror 
                             </div>
                         </div>
                         <div class="col-md-4">
+                            <div class="form-floating my-3">
+                                <input type="text" class="form-control" name="country" required="">
+                                <label for="country">country *</label>
+                                @error('country')
+                                    <span class="text-danger">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                        {{--<div class="col-md-4">
                             <div class="form-floating my-3">
                                 <input type="text" class="form-control" name="zip" required="">
                                 <label for="zip">Pincode *</label>
@@ -201,7 +210,7 @@
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
-                        </div>
+                        </div>--}}
                         <div class="col-md-12">
                             <div class="form-group my-3">
                                 <label for="extra">Extras *</label>

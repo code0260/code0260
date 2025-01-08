@@ -1,5 +1,40 @@
 @extends('layouts.admin')
 @section('content')
+
+<style>
+
+.specification-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.spec-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.toggle-specification-btn {
+    background: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+#preview-container-${specificationCounter} img {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);}
+
+.specification-content {
+    display: block;
+}
+
+
+</style>
+
     <div class="main-content-inner">
         <div class="main-content-wrap">
             <div class="flex items-center flex-wrap justify-between gap20 mb-27">
@@ -102,25 +137,31 @@
     </div>
     <!-- /main-content-wrap -->
 @endsection
-
 @push('scripts')
-    <script>
-        $(document).ready(function() {
-            const initializeTextEditor = (selector) => {
-                $(selector).each(function() {
-                    if (!$(this).data('ckeditor-initialized')) {
-                        CKEDITOR.replace(this);
-                        $(this).data('ckeditor-initialized', true);
-                    }
-                });
-            };
+<script>
+     $(document).ready(function() {
+        let specificationCounter = 0;
 
-            let specificationCounter = 0;
+        // تهيئة محرر النصوص
+        const initializeTextEditor = (selector) => {
+            $(selector).each(function() {
+                if (!$(this).data('ckeditor-initialized')) {
+                    CKEDITOR.replace(this);
+                    $(this).data('ckeditor-initialized', true);
+                }
+            });
+        };
 
-            $('#add-specification-btn').on('click', function() {
-                specificationCounter++;
-                const newSpecification = `
-                <div class="specification-item" id="specification-${specificationCounter}">
+        // إضافة قسم مواصفات جديد
+        $('#add-specification-btn').on('click', function() {
+            specificationCounter++;
+            const newSpecification = `
+            <div class="specification-item" id="specification-${specificationCounter}">
+                <div class="spec-header">
+                    <span id="specification-label-${specificationCounter}">Specification ${specificationCounter}</span>
+                    <button type="button" class="toggle-specification-btn" data-spec-id="${specificationCounter}">Hide</button>
+                </div>
+                <div class="specification-content">
                     <div class="specification-name">
                         <label for="spec-name-${specificationCounter}">Specification Name:</label>
                         <input type="text" name="specifications[${specificationCounter}][name]" id="spec-name-${specificationCounter}" placeholder="Enter specification name" required>
@@ -137,59 +178,82 @@
                         <fieldset>
                             <div class="body-title mb-10">Upload Gallery Images</div>
                             <div class="upload-image mb-16">
-                                <div id="galUpload-${specificationCounter}" class="item up-load">
-                                    <label class="uploadfile" for="gFile-${specificationCounter}">
-                                        <span class="icon">
-                                            <i class="icon-upload-cloud"></i>
-                                        </span>
-                                        <span class="text-tiny">Drop your images here or select <span class="tf-color">click to browse</span></span>
-                                        <input type="file" id="gFile-${specificationCounter}" name="specifications[${specificationCounter}][images][]" accept="image/*" multiple>
-                                    </label>
-                                </div>
+                                <label class="uploadfile" for="gFile-${specificationCounter}">
+                                    <span class="icon"><i class="icon-upload-cloud"></i></span>
+                                    <span class="text-tiny">Drop your images here or select <span class="tf-color">click to browse</span></span>
+                                    <input type="file" id="gFile-${specificationCounter}" name="specifications[${specificationCounter}][images][]" accept="image/*" multiple>
+                                </label>
+                                <div id="preview-container-${specificationCounter}" class="preview-container"></div>
                             </div>
                         </fieldset>
                     </div>
                     <button type="button" class="remove-specification-btn" data-spec-id="${specificationCounter}">Remove</button>
-                </div>`;
+                </div>
+            </div>`;
 
-                $('#specifications-container').append(newSpecification);
+            $('#specifications-container').append(newSpecification);
+            initializeTextEditor(`#spec-paragraphs-${specificationCounter}`);
 
-                initializeTextEditor(`#spec-paragraphs-${specificationCounter}`);
+            // تحديث النص الظاهر بناءً على إدخال اسم المواصفات
+            $(`#spec-name-${specificationCounter}`).on('input', function() {
+                const name = $(this).val() || `Specification ${specificationCounter}`;
+                $(`#specification-label-${specificationCounter}`).text(name);
             });
-
-            $(document).on('click', '.remove-specification-btn', function() {
-                const specId = $(this).data('spec-id');
-                $(`#specification-${specId}`).remove();
-            });
-
-            $('#description').on('focus', function() {
-                if ($(this).data('ckeditor-initialized')) {
-                    CKEDITOR.instances[$(this).attr('id')].destroy();
-                    $(this).data('ckeditor-initialized', false);
-                }
-            });
-
-            $(document).on('change', 'input[name="name"]', function() {
-                const name = $(this).val();
-                if (name) {
-                    $.ajax({
-                        url: '/admin/generate-reference-code',
-                        method: 'POST',
-                        data: {
-                            name: name,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        },
-                        success: function(response) {
-                            $('#reference_code').val(response.reference_code);
-                        },
-                        error: function() {
-                            console.error('Failed to generate reference code.');
-                        }
-                    });
-                }
-            });
-
-            initializeTextEditor('textarea[name^="specifications"]');
         });
-    </script>
+
+        // إظهار/إخفاء قسم المواصفات
+        $(document).on('click', '.toggle-specification-btn', function() {
+            const specId = $(this).data('spec-id');
+            const specContent = $(`#specification-${specId} .specification-content`);
+            const button = $(this);
+
+            if (specContent.is(':visible')) {
+                specContent.slideUp();
+                button.text('Show');
+            } else {
+                specContent.slideDown();
+                button.text('Hide');
+            }
+        });
+
+        // معاينة الصور
+        $(document).on('change', 'input[type="file"]', function(event) {
+            if (event.target && event.target.id.startsWith('gFile-')) {
+                const fileInput = event.target;
+                const previewContainerId = fileInput.id.replace('gFile-', 'preview-container-');
+                const previewContainer = document.getElementById(previewContainerId);
+                const files = fileInput.files;
+
+                previewContainer.innerHTML = '';
+                if (files && files.length > 0) {
+                    Array.from(files).forEach(file => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.alt = 'Image Preview';
+                            img.style.maxWidth = '100px';
+                            img.style.maxHeight = '100px';
+                            img.style.objectFit = 'cover';
+                            previewContainer.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    previewContainer.innerHTML = '<p>No images selected</p>';
+                }
+            }
+        });
+
+        // إزالة قسم المواصفات
+        $(document).on('click', '.remove-specification-btn', function() {
+            const specId = $(this).data('spec-id');
+            $(`#specification-${specId}`).remove();
+        });
+
+        // تهيئة محرر النصوص للمواصفات
+        initializeTextEditor('textarea[name^="specifications"]');
+    });
+
+</script>
 @endpush

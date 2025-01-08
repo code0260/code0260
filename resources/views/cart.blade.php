@@ -188,33 +188,7 @@
                                         <td>
                                             <h4>{{ $item->name }}</h4>
                                         </td>
-                                        <td>
-                                            @foreach ($item->options['specifications'] as $spec)
-                                                <div class="specification">
-                                                    <strong>{{ $spec['name'] }}:</strong>
-                                                    <p>{{ $spec['title'] ?? 'No title' }}</p>
-
-                                                    @if (is_array($spec['paragraphs']))
-                                                        @foreach ($spec['paragraphs'] as $paragraph)
-                                                            {!! $paragraph !!} <!-- Render as HTML -->
-                                                        @endforeach
-                                                    @else
-                                                        {!! $spec['paragraphs'] !!} <!-- Render as HTML -->
-                                                    @endif
-
-                                                    @if (!empty($spec['images']))
-                                                        <div class="spec-images">
-                                                            @foreach ($spec['images'] as $image)
-                                                                <img src="{{ asset('storage/' . $image) }}" alt="spec image"
-                                                                    width="50" height="50">
-                                                            @endforeach
-                                                        </div>
-                                                    @endif
-
-                                                </div>
-                                            @endforeach
-
-                                        </td>
+                                    
                                           
                                          
                                         <td>${{ $item->subTotal() }}</td>
