@@ -95,6 +95,8 @@
                                             @else
                                                 <span class="badge bg-warning">Ordered</span>
                                             @endif
+
+                                            {{ $order->status }}
                                         </td>
                                         <td class="text-center">{{ $order->created_at }}</td>
                                         <td class="text-center">{{ $order->orderItems->count() }}</td>
@@ -120,6 +122,12 @@
                                                     </div>
                                                 </div>
                                             </a>
+                                            <div>
+                                                <a href="{{ route('user.order.edit', ['order_id' => $order->id]) }}"
+                                                    class="ms-2" title="Edit Order">
+                                                    <i class="fa fa-edit text-primary" style="font-size: 1.2rem;"></i>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 @endforeach

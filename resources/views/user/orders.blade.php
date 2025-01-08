@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('content') 
+@section('content')
     <style>
         .table> :not(caption)>tr>th {
             padding: 0.625rem 1.5rem .625rem !important;
@@ -96,6 +96,11 @@
                                                         </div>
                                                     </div>
                                                 </a>
+                                                <a href="{{ route('user.order.edit', ['order_id' => $order->id]) }}"
+                                                    class="ms-2" title="Edit Order">
+                                                    <i class="fa fa-edit text-primary" style="font-size: 1.2rem;"></i>
+                                                </a>
+
                                             </td>
 
                                         </tr>

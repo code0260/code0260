@@ -22,27 +22,29 @@ class Order extends Model
         'country',
         'landmark',
         'zip',
+        'status',
         // Add any other fields you want to be mass assignable
     ];
     use HasFactory;
-                public function user()
-                {
-                return $this->belongsTo (User::class);
-                }
-                public function address() {
-                    return $this->belongsTo(Address::class);
-                }
-                
-                public function orderItems()
-                {
-                return $this->hasMany (OrderItem::class);
-                }
-                public function transaction()
-                {
-                return $this->hasone (Transaction::class);
-                }
-                public function productSpecifications()
-                {
-                    return $this->hasMany(ProductOrderSpecification::class, 'order_id');  // ربط المواصفات بالطلب
-                }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+    public function transaction()
+    {
+        return $this->hasone(Transaction::class);
+    }
+    public function productSpecifications()
+    {
+        return $this->hasMany(ProductOrderSpecification::class, 'order_id');  // ربط المواصفات بالطلب
+    }
 }
