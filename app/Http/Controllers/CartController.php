@@ -427,26 +427,91 @@ class CartController extends Controller
 
         return $pdf->download('order_' . $order->id . '.pdf');
     }*/
-    public function downloadPdf($orderId)
-    {
-        // جلب الطلب
-        $order = Order::findOrFail($orderId);
-        $cartItems = Cart::instance('cart')->content();
 
-        // جلب عناصر الطلب مع مواصفات المنتج و reference code
-        $orderItems = OrderItem::with(['product' => function ($query) {
-            $query->select('id', 'name', 'slug'); // تأكد من تحديد الحقول المطلوبة فقط
-        }])->where('order_id', $order->id)->get();
-        // تحميل ملف PDF
-        $pdf = PDF::loadView('orders.pdf', [
-            'order' => $order,
-            'orderItems' => $orderItems,
-            'cartItems' => $cartItems, // تمرير cartItems هنا
+    public function base64EncodeImageA($image)
+{
+    // مسار الصورة الكامل
+    $fullPath = public_path('storage/' . $image);
 
-            'base64EncodeImage' => [$this, 'base64EncodeImage']
-        ]);
-        Cart::instance('cart')->destroy();
-
-        return $pdf->download('order_' . $order->id . '.pdf');
+    // تحقق إذا كانت الصورة موجودة
+    if (file_exists($fullPath)) {
+        $imageData = file_get_contents($fullPath);
+        return 'data:image/' . pathinfo($fullPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($imageData);
     }
+
+    // إذا لم تكن الصورة موجودة
+    return null;
+}
+
+public function downloadPdf($orderId)
+{
+    // جلب الطلب
+    $order = Order::findOrFail($orderId);
+    $cartItems = Cart::instance('cart')->content();
+
+    // جلب عناصر الطلب مع مواصفات المنتج
+    $orderItems = OrderItem::with(['product' => function ($query) {
+        $query->select('id', 'name', 'slug');
+    }])->where('order_id', $order->id)->get();
+
+    // دمج المواصفات والوصف
+    foreach ($orderItems as $item) {
+        foreach ($cartItems as $cartItem) {
+            if ($cartItem->id == $item->product_id) { // مطابقة المنتج
+                $specifications = $cartItem->options->specifications ?? [];
+
+                // التأكد من أن المواصفات هي مصفوفة
+                if (!is_array($specifications)) {
+                    $specifications = json_decode($specifications, true);
+                }
+
+                $item->specifications = $specifications;
+                $item->description = $cartItem->options->description ?? '';
+                break;
+            }
+        }
+    }
+
+    // تحميل ملف PDF
+    $pdf = PDF::loadView('orders.pdf', [
+        'order' => $order,
+        'orderItems' => $orderItems,
+        'cartItems' => $cartItems,
+        'base64EncodeImageA' => [$this, 'base64EncodeImageA'], // تم تمرير دالة تحويل الصورة
+    ]);
+
+    Cart::instance('cart')->destroy();
+
+    return $pdf->download('order_' . $order->id . '.pdf');
+}
+
+    
+
+    public function updateDescription($rowId, Request $request)
+    {
+        // التحقق من صحة المدخلات
+        $request->validate([
+            'description' => 'required|string|max:255'  // التحقق من الوصف
+        ]);
+    
+        // الحصول على المنتج في السلة
+        $product = Cart::instance('cart')->get($rowId);
+    
+        // الاحتفاظ بالمواصفات الحالية في حالة عدم تعديلها
+        $currentSpecifications = $product->options['specifications'] ?? [];
+    
+        // تحديث الوصف مع الاحتفاظ بالمواصفات
+        Cart::instance('cart')->update($rowId, [
+            'options' => [
+                'description' => $request->description,
+                'specifications' => $currentSpecifications,  // الحفاظ على المواصفات كما هي
+            ],
+            'qty' => $product->qty  // الحفاظ على الكمية كما هي
+        ]);
+    
+        // العودة إلى الصفحة السابقة مع رسالة النجاح
+        return redirect()->back()->with('success', 'Description updated successfully!');
+    }
+    
+
 }

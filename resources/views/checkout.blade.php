@@ -166,51 +166,7 @@
                                 @enderror
                             </div>
                         </div>
-                        {{--<div class="col-md-4">
-                            <div class="form-floating my-3">
-                                <input type="text" class="form-control" name="zip" required="">
-                                <label for="zip">Pincode *</label>
-                                @error('zip')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-floating mt-3 mb-3">
-                                <input type="text" class="form-control" name="state" required="">
-                                <label for="state">State *</label>
-                                @error('state')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-floating my-3">
-                                <input type="text" class="form-control" name="city" required="">
-                                <label for="city">Town / City *</label>
-                                @error('city')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating my-3">
-                                <input type="text" class="form-control" name="address" required="">
-                                <label for="address">House no, Building Name *</label>
-                                @error('address')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-floating my-3">
-                                <input type="text" class="form-control" name="locality" required="">
-                                <label for="locality">Road Name, Area, Colony *</label>
-                                @error('locality')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>--}}
+                      
                         <div class="col-md-12">
                             <div class="form-group my-3">
                                 <label for="extra">Extras *</label>
@@ -222,86 +178,29 @@
                         </div>
                     </div>
                 </div>
-
+ 
                 <div class="checkout__totals-wrapper">
-                    <div class="sticky-content">
-                        <div class="checkout__totals">
-                            <h3>Your Order</h3>
-                            <table class="checkout-cart-items">
-                                <thead>
-                                    <tr>
-                                        <th>PRODUCT</th>
-                                        <th align="right">SUBTOTAL</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (Cart::instance('cart') as $item)
-                                        <tr>
-                                            <td>
-                                                {{ $item->name }} x {{ $item->qty }}
-                                            </td>
-                                            <td align="right">
-                                                ${{ $item->subtotal() }}
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                            @if (Session::has('discounts'))
-                                <table class="checkout-totals">
-                                    <tbody>
-                                        <tr>
-                                            <th>Subtotal</th>
-                                            <td class="text-right">${{ Cart::instance('cart')->subtotal() }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Discount {{ Session::get('coupon')['code'] }}</th>
-                                            <td class="text-right">${{ Session::get('discounts')['discount'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <th>Subtotal After Discount</th>
-                                            <td class="text-right">${{ Session::get('discounts')['subtotal'] }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            @else
-                                <table class="checkout-totals">
-                                    <tbody>
-                                        <tr>
-                                            <th>TOTAL</th>
-                                            <td class="text-right">${{ Cart::instance('cart')->subtotal() }}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            @endif
+                    <fieldset>
+                        <div class="body-title mb-10">Upload Technical Drawings or Images</div>
+                        <div class="upload-image mb-16">
+                            <label class="uploadfile" for="images">
+                                <span class="icon"><i class="icon-upload-cloud"></i></span>
+                                 <input type="file" id="images" name="images[]" accept="image/*" multiple>
+                            </label>
+                            <div id="preview-container" class="preview-container"></div>
                         </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="form-floating my-3">
-                            <input 
-                                type="file" 
-                                class="form-control" 
-                                name="images[]" 
-                                id="images" 
-                                multiple 
-                                style="padding: 15px; border-radius: 3px; border: 1px solid #e5e5e5;">
-                            <label for="images">Upload Images</label>
-                            <small class="form-text text-muted">You can upload multiple images (JPG, PNG).</small>
-                            @error('images.*')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
+                    </fieldset>
                     
-                    
+                    <!-- Preview of selected images as a grid -->
+                    <div id="image-preview" class="my-3"></div>
+                
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary" style="background-color: #109faf; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; transition: transform 0.3s ease, background-color 0.3s ease;">
-                            Submit Information
+                            Order Confirmation
                         </button>
                     </div>
-                    
-                                    </div>
-            </div>
+                </div>
+                
         </form>
     </section>
 </main>
@@ -317,5 +216,66 @@
                     console.error(error);
                 });
         });
-    </script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+    // تفعيل المعاينة
+    function previewImages(event) {
+        var preview = document.getElementById('preview-container');
+        preview.innerHTML = ''; // إزالة أي صور سابقة
+        
+        // الحصول على الملفات
+        var files = event.target.files;
+
+        // حلقة من أجل عرض الصور
+        for (var i = 0; i < files.length; i++) {
+            var file = files[i];
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // إنشاء عنصر صورة
+                var img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Image Preview';
+                img.style.maxWidth = '100px';
+                img.style.maxHeight = '100px';
+                img.style.objectFit = 'cover';
+
+                // إضافة الصورة إلى المعاينة
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file); // قراءة الملف كـ Data URL لعرضه
+        }
+    }
+
+    // إضافة حدث الـ "change" لرفع الصور
+    document.getElementById('images').addEventListener('change', previewImages);
+});
+
+
+document.querySelector("form[name='checkout-form']").addEventListener('submit', function(event) {
+    var images = document.getElementById('images').files;
+    if (images.length === 0) {
+        alert("Please upload at least one image before confirming the order.");
+        event.preventDefault(); // منع الإرسال حتى يتم رفع صورة
+    }
+});
+
+
+     </script>
+    <style>.preview-container {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .preview-container img {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
+    
+
+    </style>
 @endpush

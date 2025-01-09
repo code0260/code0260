@@ -63,20 +63,55 @@
         height: 60px;
     }
 
-    .qty-control {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
+    .cart-table td {
+    vertical-align: middle;
+}
 
-    .qty-control__number {
-        width: 60px;
-        text-align: center;
-        padding: 5px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
+.qty-control {
+    display: flex;
+    justify-content: space-between;  /* جعل الأزرار متباعدة */
+    align-items: center;
+    width: 120px;  /* تحديد عرض الحاوية */
+}
+
+.qty-control button {
+    width: 35px;  /* تحديد عرض الأزرار */
+    height: 35px;  /* تحديد ارتفاع الأزرار */
+    border-radius: 50%;  /* لجعل الأزرار مدورة */
+    font-size: 20px;  /* تغيير حجم الخط داخل الأزرار */
+    border: 1px solid #ddd;  /* تحديد حدود الأزرار */
+    background-color: #109faf;  /* اللون الفيروزي */
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.qty-control button:hover {
+    background-color: #168f9c;  /* اللون الفيروزي الداكن عند التمرير */
+}
+
+.qty-control input[type="number"] {
+    width: 50px;  /* عرض المدخل */
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid #e5e5e5;
+    font-size: 16px;
+    padding: 5px;
+}
+
+
+.cart-table th, .cart-table td {
+    padding: 15px;
+    text-align: center;
+}
+
+.cart-table td {
+    padding: 10px;
+}
+
+.cart-table td .btn {
+    padding: 5px 10px;
+}
 
     .btn {
         padding: 10px 15px;
@@ -152,15 +187,35 @@
     vertical-align: middle; /* للتوسيط الرأسي */
 }
 
-/* إذا أردت توسيط المحتوى داخل .specification */
-.specification {
-    text-align: center;
-    margin: 10px 0;
+/* تحسين تنسيق حقل الوصف */
+.description-input {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #e5e5e5;
 }
 
-.specification img {
-    display: block;
-    margin: 0 auto;
+
+.shopping-cart__totals-wrapper {
+    position: relative;
+}
+
+.next-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+}
+
+.next-btn:hover {
+    background-color: #109faf;
 }
 
 </style>
@@ -175,42 +230,71 @@
                             <thead>
                                 <tr>
                                     <th>Product</th>
-                                    <th>Specifications</th>
-                                     
+                                    <th>Price</th>
+                                    <th>Quantity</th>
                                     <th>Total</th>
-                                    <th>Description</th>
+                                    <th>PRODUCT DESCRIPTION</th>
                                     <th>Action</th>
                                 </tr>
-                            </thead>
+                            </thead>      
                             <tbody>
                                 @foreach ($items as $item)
                                     <tr>
                                         <td>
                                             <h4>{{ $item->name }}</h4>
                                         </td>
-                                    
-                                          
-                                         
-                                        <td>${{ $item->subTotal() }}</td>
-                                        <td>{{ $item->options['description'] }}</td>
                                         <td>
-                                            <form method="POST"
-                                                action="{{ route('cart.item.remove', ['rowId' => $item->rowId]) }}">
+                                            <span class="shopping-cart__product-price">${{ $item->price }}</span>
+                                            <!-- إضافة تعديل السعر هنا -->
+                                            <form method="POST" action="{{ route('cart.price.update', ['rowId' => $item->rowId]) }}" style="display:inline;">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="d-flex align-items-center">
+                                                    <input type="number" name="price" value="{{ $item->price }}" step="0.01" class="form-control form-control-sm" style="width: 80px; margin-right: 5px;">
+                                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                                </div>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            <div class="qty-control">
+                                                <form method="POST" action="{{ route('cart.qty.decrease', ['rowId' => $item->rowId]) }}">
+                                                    @csrf @method('PUT')
+                                                    <button type="submit">-</button>
+                                                </form>
+                                        
+                                                <input type="number" class="qty-control__number" value="{{ $item->qty }}" readonly>
+                                        
+                                                <form method="POST" action="{{ route('cart.qty.increase', ['rowId' => $item->rowId]) }}">
+                                                    @csrf @method('PUT')
+                                                    <button type="submit">+</button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                        
+                                        
+                                        <td>${{ $item->subTotal() }}</td>
+                                         <td>
+                                            <form method="POST" action="{{ route('cart.description.update', ['rowId' => $item->rowId]) }}" style="display:inline;">
+                                                @csrf
+                                                @method('PUT')
+                                                <input type="text" name="description" class="form-control" value="{{ $item->options['description'] }}">
+                                                <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                            </form>
+                                        </td>
+                                        
+                                        <td>
+                                            <form method="POST" action="{{ route('cart.item.remove', ['rowId' => $item->rowId]) }}">
                                                 @csrf @method('DELETE')
                                                 <button class="btn btn-danger">Remove</button>
                                             </form>
-                                            <a href="{{ route('cart.edit', ['rowId' => $item->rowId]) }}"
-                                                class="btn btn-info">Edit</a>
-
+                                            <a href="{{ route('cart.edit', ['rowId' => $item->rowId]) }}" class="btn btn-info">Edit Specifications</a>
                                         </td>
                                     </tr>
                                 @endforeach
-                            </tbody>
+                            </tbody> 
                             <div class="shopping-cart__totals-wrapper">
-                                <h3>Product Totals</h3>
-                                <p>Total: ${{ Cart::instance('cart')->subtotal() }}</p>
                                 <div class="mobile_fixed-btn_wrapper">
-                                    <a href="{{ route('cart.checkout') }}" class="btn btn-primary">PROCEED TO CHECKOUT</a>
+                                    <a href="{{ route('cart.checkout') }}" class="btn btn-primary next-btn">NEXT</a>
                                 </div>
                             </div>
                         </table>

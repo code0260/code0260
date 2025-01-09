@@ -144,13 +144,23 @@
 
         // تهيئة محرر النصوص
         const initializeTextEditor = (selector) => {
-            $(selector).each(function() {
-                if (!$(this).data('ckeditor-initialized')) {
-                    CKEDITOR.replace(this);
-                    $(this).data('ckeditor-initialized', true);
-                }
-            });
-        };
+    $(selector).each(function() {
+        if (!$(this).data('ckeditor-initialized')) {
+            CKEDITOR.replace(this);
+
+            // بعد تهيئة الـ CKEditor، نزيل التاغات أو الدبل كوتيشن إذا كانت موجودة
+            var content = $(this).val(); // الحصول على المحتوى
+            content = content.replace(/<[^>]*>/g, ''); // إزالة أي تاغات HTML
+            content = content.replace(/\"/g, ''); // إزالة الدبل كوتيشن
+
+            // تعيين المحتوى المعدل داخل الـ CKEditor
+            CKEDITOR.instances[$(this).attr('id')].setData(content);
+            
+            $(this).data('ckeditor-initialized', true);
+        }
+    });
+}; 
+
 
         // إضافة قسم مواصفات جديد
         $('#add-specification-btn').on('click', function() {

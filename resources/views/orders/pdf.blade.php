@@ -272,66 +272,84 @@
         <h1 style="text-align: center; font-size: 24px; font-weight: bold;">Attachment-2: Technical Specification</h1>
 
         <div class="specifications-section" style="margin: 20px; font-family: Arial, sans-serif;">
-            @foreach ($order->orderItems as $item)
-            <div class="specification" style="margin-bottom: 40px;">
-                <div style="background-color: #40E0D0; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-bottom: 20px;">
-                    PREFABEX 
-                    <strong>{{ $item->product->name }}</strong> 
-                    BUILDING TECHNICAL SPECIFICATIONS
-                </div>
-        
-                @foreach ($item->product->specifications as $spec)
-                <div>
-                    <p style="font-size: 18px; text-decoration: underline; font-weight: bold;">{{ $spec->name }}</p>
-                    <p style="font-size: 14px; margin: 5px 0;">{{ $spec->title }}</p>
-        
-                    @if (!empty($spec['paragraphs']))
-                        <p style="font-size: 14px; line-height: 1.6;">{!! $spec['paragraphs'] !!}</p>
-                    @endif
-        
-                    @if (!empty($spec->images))
-                    <div class="spec-images" style="margin-top: 20px;">
-                        @foreach (json_decode($spec->images) as $image)
-                        @php
-                            $base64Image = call_user_func($base64EncodeImage, public_path('uploads/products/specifications/' . $image));
-                        @endphp
-                        @if ($base64Image)
-                            <img src="{{ $base64Image }}" alt="spec image" style="max-width: 100%; height: auto; margin-bottom: 10px;">
-                        @else
-                            <p style="color: red;">Image not found: {{$image}}</p>
-                        @endif
-                        @endforeach
+            @foreach ($orderItems as $item)
+                <div class="specification" style="margin-bottom: 40px;">
+                    <div style="background-color: #40E0D0; color: white; padding: 10px 20px; border-radius: 5px; font-weight: bold; text-transform: uppercase; margin-bottom: 20px;">
+                        PREFABEX 
+                        <strong>{{ $item->product->name }}</strong> 
+                        BUILDING TECHNICAL SPECIFICATIONS
                     </div>
+        
+                    @if (!empty($item->specifications))
+                        @foreach ($item->specifications as $spec)
+                            <div>
+                                <p style="font-size: 18px; text-decoration: underline; font-weight: bold;">{{ $spec['name'] ?? 'Specification' }}</p>
+                                <p style="font-size: 14px; margin: 5px 0;">{{ $spec['title'] ?? 'No title' }}</p>
+        
+                                <!-- Paragraphs -->
+                                @if (!empty($spec['paragraphs']))
+                                    <p style="font-size: 14px; line-height: 1.6;">{!! $spec['paragraphs'] !!}</p>
+                                @endif
+        
+                                <!-- Images -->
+                               @if (!empty($spec['images']))
+                                    @php
+                                        $images = is_array($spec['images']) ? $spec['images'] : json_decode($spec['images'], true);
+                                    @endphp
+                                
+                                    @if (is_array($images) && count($images) > 0)
+                                        <div class="spec-images">
+                                            @foreach ($images as $image)
+                                                @php
+                                                    $base64Image = $base64EncodeImageA($image);
+                                                @endphp
+
+                                                @if ($base64Image)
+                                                    <img src="{{ $base64Image }}" alt="spec image" width="100" height="100" style="margin-right: 10px;">
+                                                @else
+                                                    <p>Image not found: {{ $image }}</p>
+                                                @endif
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <p>No images available.</p>
+                                    @endif
+                                
+                            @endif
+                            
+                            </div>
+                        @endforeach
+                    @else
+                        <p>No specifications available.</p>
                     @endif
                 </div>
-                @endforeach
-            </div>
             @endforeach
         </div>
         
+        
+         
    
-<div class="section">
-    <h2>Attachment-3: Technical Drawing or Image</h2>
-    <div class="order-details">
-        <h3>Order Details</h3>
-        <p>For the technical drawings or images, please refer to the attached documents below:</p>
-    
-        <div class="order-images">
-            @if (!empty($images))
-                <h4>Attached Images:</h4>
-                <div class="image-gallery">
-                    @foreach ($images as $image)
-                        <div class="image-item">
-                            <img src="{{ asset('storage/' . $image) }}" alt="Order Image" style="max-width: 200px; margin: 10px;">
-                        </div>
-                    @endforeach
+        <div class="section">
+            <h2>Attachment-3: Technical Drawing or Image</h2>
+            <div class="order-details">
+                <h3>Order Details</h3>
+                <p>For the technical drawings or images, please refer to the attached documents below:</p>
+            
+                <div class="order-images">
+                    <h3>Order Images</h3> 
+                    <div class="image-gallery">
+                        @if (!empty($order->images))
+                            @foreach (json_decode($order->images) as $image)
+                                <!-- استخدم الرابط الكامل للصور -->
+                                <img src="{{ public_path('storage/' . $image) }}" alt="Order Image" width="100" height="100" style="margin-right: 10px;">
+                             @endforeach
+                        @else
+                            <p>No images uploaded for this order.</p>
+                        @endif
+                    </div>
                 </div>
-            @else
-                <p>No images attached for this order.</p>
-            @endif
+            </div>
         </div>
-    </div>
-        </div>
-</body>
+        
 </html>
  

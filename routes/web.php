@@ -39,6 +39,7 @@ Route::prefix('cart')->group(function () {
 Route::get('/order/{orderId}/download-pdf', [CartController::class, 'downloadPdf'])->name('order.downloadPdf');
 
 //Route::put('/cart/specifications/update/{rowId}/{specIndex}', [CartController::class, 'updateSpecifications'])->name('cart.specifications.update');
+Route::put('/cart/description/update/{rowId}', [CartController::class, 'updateDescription'])->name('cart.description.update');
 
 
 

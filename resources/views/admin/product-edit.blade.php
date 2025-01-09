@@ -214,123 +214,128 @@
             button.text(`Hide ${specName}`); // عرض اسم السبيسفكيشن في الزر
         }
     });
-
     $(document).ready(function() {
-        // Initialize CKEditor for existing specification paragraphs
-        $(".ckeditor").each(function() {
-            CKEDITOR.replace(this);
+    let specificationCounter = 0;
+
+    // Initialize CKEditor for existing specification paragraphs
+    const initializeCKEditor = (selector) => {
+        $(selector).each(function() {
+            if (!$(this).data('ckeditor-initialized')) {
+                CKEDITOR.replace(this);
+                 // بعد تهيئة الـ CKEditor، نزيل التاغات أو الدبل كوتيشن إذا كانت موجودة
+            var content = $(this).val(); // الحصول على المحتوى
+            content = content.replace(/<[^>]*>/g, ''); // إزالة أي تاغات HTML
+            content = content.replace(/\"/g, ''); // إزالة الدبل كوتيشن
+   // تعيين المحتوى المعدل داخل الـ CKEditor
+   CKEDITOR.instances[$(this).attr('id')].setData(content);
+                $(this).data('ckeditor-initialized', true);
+            }
         });
+    };
 
-        let specificationCounter = 0;
+    // Initialize CKEditor for existing .ckeditor fields on document ready
+    initializeCKEditor(".ckeditor");
 
-        $('#add-specification-btn').on('click', function() {
-            specificationCounter++;
+    $('#add-specification-btn').on('click', function() {
+        specificationCounter++;
 
-            // New Specification HTML
-            const newSpecification = `
-            <div class="specification-item" id="specification-${specificationCounter}">
-                <div class="cols gap10">
-                    <fieldset class="image">
-                        <label for="spec-image-${specificationCounter}">Specification Images</label>
-                        <div class="upload-image mb-16">
-                            <div id="gallery-preview-${specificationCounter}" class="gallery-preview">
-                                <!-- Preview of new images will be shown here -->
-                            </div>
+        // New Specification HTML
+        const newSpecification = `
+        <div class="specification-item" id="specification-${specificationCounter}">
+            <div class="cols gap10">
+                <fieldset class="image">
+                    <label for="spec-image-${specificationCounter}">Specification Images</label>
+                    <div class="upload-image mb-16">
+                        <div id="gallery-preview-${specificationCounter}" class="gallery-preview">
+                            <!-- Preview of new images will be shown here -->
                         </div>
-                        <input type="file" name="specifications[new_${specificationCounter}][images][]" class="form-control gallery-input" data-preview-id="gallery-preview-${specificationCounter}" multiple>
-                    </fieldset>
+                    </div>
+                    <input type="file" name="specifications[new_${specificationCounter}][images][]" class="form-control gallery-input" data-preview-id="gallery-preview-${specificationCounter}" multiple>
+                </fieldset>
 
-                    <fieldset class="other-info">
-                        <label for="spec-name-${specificationCounter}">Specification Name</label>
-                        <input type="text" id="spec-name-${specificationCounter}" name="specifications[new_${specificationCounter}][name]" placeholder="Enter specification name" required>
+                <fieldset class="other-info">
+                    <label for="spec-name-${specificationCounter}">Specification Name</label>
+                    <input type="text" id="spec-name-${specificationCounter}" name="specifications[new_${specificationCounter}][name]" placeholder="Enter specification name" required>
 
-                        <label for="spec-title-${specificationCounter}">Specification Title</label>
-                        <input type="text" name="specifications[new_${specificationCounter}][title]" placeholder="Enter specification title">
+                    <label for="spec-title-${specificationCounter}">Specification Title</label>
+                    <input type="text" name="specifications[new_${specificationCounter}][title]" placeholder="Enter specification title">
 
-                        <label for="spec-paragraphs-${specificationCounter}">Specification Paragraphs</label>
-                        <textarea name="specifications[new_${specificationCounter}][paragraphs]" class="ckeditor" placeholder="Enter paragraphs"></textarea>
-                    </fieldset>
+                    <label for="spec-paragraphs-${specificationCounter}">Specification Paragraphs</label>
+                    <textarea name="specifications[new_${specificationCounter}][paragraphs]" class="ckeditor" placeholder="Enter paragraphs"></textarea>
+                </fieldset>
 
-                    <!-- إضافة الزر مع اسم السبيسفكيشن مباشرة -->
-                    <button type="button" class="toggle-specification-btn" data-spec-id="${specificationCounter}">Show ${$('#spec-name-' + specificationCounter).val()}</button>
-                    
-                    <button type="button" class="remove-specification-btn" data-spec-id="${specificationCounter}">Remove</button>
-                </div>
-            </div>`;
+                <!-- إضافة الزر مع اسم السبيسفكيشن مباشرة -->
+                <button type="button" class="toggle-specification-btn" data-spec-id="${specificationCounter}">Show ${$('#spec-name-' + specificationCounter).val()}</button>
 
-            $('#specifications-container').append(newSpecification);
+                <button type="button" class="remove-specification-btn" data-spec-id="${specificationCounter}">Remove</button>
+            </div>
+        </div>`;
 
-            // تحديث النص في الزر ليعرض اسم السبيسفكيشن الجديد
-            const specName = $(`#spec-name-${specificationCounter}`).val(); 
-            $(`.toggle-specification-btn[data-spec-id="${specificationCounter}"]`).text(`Show ${specName}`);
+        $('#specifications-container').append(newSpecification);
 
-            // Initialize CKEditor for the new specification paragraphs
-            CKEDITOR.replace($(
-                `textarea[name='specifications[new_${specificationCounter}][paragraphs]']`)[0]);
+        // تحديث النص في الزر ليعرض اسم السبيسفكيشن الجديد
+        const specName = $(`#spec-name-${specificationCounter}`).val(); 
+        $(`.toggle-specification-btn[data-spec-id="${specificationCounter}"]`).text(`Show ${specName}`);
+
+        // Initialize CKEditor for the new specification paragraphs
+        initializeCKEditor(`textarea[name='specifications[new_${specificationCounter}][paragraphs]']`);
+    });
+
+    // إدارة الصور
+    $(document).on('change', '.gallery-input', function() {
+        const input = this;
+        const previewContainerId = input.getAttribute('data-preview-id');
+        const previewContainer = document.getElementById(previewContainerId);
+
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgWrapper = document.createElement('div');
+                imgWrapper.classList.add('gitems');
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Gallery Image';
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.classList.add('remove-new-image-btn');
+                removeBtn.textContent = 'X';
+
+                imgWrapper.appendChild(img);
+                imgWrapper.appendChild(removeBtn);
+                previewContainer.appendChild(imgWrapper);
+            };
+            reader.readAsDataURL(file);
         });
+    });
 
-        // إدارة الصور
-        document.addEventListener('change', function(event) {
-            if (event.target && event.target.type === 'file' && event.target.classList.contains('gallery-input')) {
-                const input = event.target;
-                const previewContainerId = input.getAttribute('data-preview-id');
-                const previewContainer = document.getElementById(previewContainerId);
+    // حذف الصور القديمة والجديدة
+    $(document).on('click', '.remove-new-image-btn, .remove-old-image-btn', function() {
+        const imageDiv = $(this).closest('.gitems');
+        imageDiv.remove();
+    });
 
-                Array.from(input.files).forEach(file => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const imgWrapper = document.createElement('div');
-                        imgWrapper.classList.add('gitems');
+    // إزالة السبيسفكيشن
+    $(document).on('click', '.remove-specification-btn', function() {
+        const specId = $(this).data('spec-id');
+        $(`#specification-${specId}`).remove();
+    });
 
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.alt = 'Gallery Image';
-
-                        const removeBtn = document.createElement('button');
-                        removeBtn.type = 'button';
-                        removeBtn.classList.add('remove-new-image-btn');
-                        removeBtn.textContent = 'X';
-
-                        imgWrapper.appendChild(img);
-                        imgWrapper.appendChild(removeBtn);
-                        previewContainer.appendChild(imgWrapper);
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-        });
-
-        // حذف الصور القديمة والجديدة
-        document.addEventListener('click', function(event) {
-            if (event.target && event.target.classList.contains('remove-old-image-btn')) {
-                const imageDiv = event.target.closest('.gitems');
-                const hiddenInput = imageDiv.querySelector('input[type="hidden"]');
-                if (hiddenInput) hiddenInput.remove();
-                imageDiv.remove();
-            }
-
-            if (event.target && event.target.classList.contains('remove-new-image-btn')) {
-                const imageDiv = event.target.closest('.gitems');
-                imageDiv.remove();
-            }
-        });
-
-        // حذف الصور الحالية من المعاينة
-        document.addEventListener('click', function(event) {
-            if (event.target && event.target.classList.contains('remove-image-btn')) {
-                const imageDiv = event.target.closest('.gitems');
-                imageDiv.remove();
-            }
-        });
-
-        // إزالة السبيسفكيشن
-        $(document).on('click', '.remove-specification-btn', function() {
-            const specId = $(this).data('spec-id');
-            $(`#specification-${specId}`).remove();
-        });
+    // Toggle Specification visibility
+    $(document).on('click', '.toggle-specification-btn', function() {
+        const specId = $(this).data('spec-id');
+        const specItem = $(`#specification-${specId}`);
+        specItem.toggleClass('collapsed');
+        const text = specItem.hasClass('collapsed') ? 'Show' : 'Hide';
+        $(this).text(`${text} ${$('#spec-name-' + specId).val()}`);
     });
 });
 
+});
+ 
+
+ 
         
     </script>
     

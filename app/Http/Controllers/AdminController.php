@@ -175,7 +175,7 @@ class AdminController extends Controller
         $product = new Product();
         $product->name = $request->name;
         $product->slug = $this->generateReferenceCode($request);
-        $product->description = $request->description ?? 'No description available.';
+        $product->description = $request->description ?? 'Insert Description.';
         $product->category_id = $request->category_id;
 
         $product->stock_status = $request->stock_status;
@@ -256,7 +256,7 @@ class AdminController extends Controller
         $product = Product::findOrFail($request->id);
         $product->name = $request->name;
         $product->slug = $this->generateReferenceCode($request);
-        $product->description = $request->description ?? 'No description available.';
+        $product->description = $request->description ?? 'Insert Description..';
         $product->category_id = $request->category_id;
 
         $product->stock_status = $request->stock_status;
