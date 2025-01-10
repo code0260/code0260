@@ -191,7 +191,7 @@ class AdminController extends Controller
 
                 // حفظ الجمل الموصوفة
                 if (isset($spec['paragraphs'])) {
-                    $specification->paragraphs = json_encode($spec['paragraphs']);
+                    $specification->paragraphs = $spec['paragraphs'];
                 }
 
                 // حفظ الصور

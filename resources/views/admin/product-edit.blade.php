@@ -209,14 +209,7 @@
                                                     name="specifications[{{ $specification->id }}][title]"
                                                     placeholder="Enter specification title"
                                                     value="{{ old('specifications.' . $specification->id . '.title', $specification->title) }}">
-                                                @php
-                                                    $decodedParagraphs = nl2br(
-                                                        htmlspecialchars_decode(
-                                                            stripslashes($specification['paragraphs']),
-                                                        ),
-                                                    );
 
-                                                @endphp
                                                 <label for="spec-paragraphs-{{ $specification->id }}">Specification
                                                     Paragraphs</label>
                                                 <textarea name="specifications[{{ $specification->id }}][paragraphs]" id="spec-paragraphs-{{ $specification->id }}"
