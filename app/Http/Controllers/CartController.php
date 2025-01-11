@@ -111,7 +111,7 @@ class CartController extends Controller
         $request->validate([
             'name' => 'required|max:100',
             'phone' => 'nullable|digits:10',
-            'zip' => 'nullable|digits:6', 
+            'zip' => 'nullable|digits:6',
             'state' => 'nullable',
             'city' => 'nullable',
             'address' => 'nullable',
@@ -137,7 +137,7 @@ class CartController extends Controller
         // إضافة العنوان الجديد للمستخدم
         $address = new Address();
         $address->name = $request->name;
-        $address->phone =$request->phone;
+        $address->phone = $request->phone;
         $address->zip = '00000';
         $address->state = '02135';
         $address->city = 'Mashru Dummar';
@@ -192,18 +192,14 @@ class CartController extends Controller
 
 
             foreach ($item->options['specifications'] as $spec) {
-                // Access 'images' as an array key
-                $images = isset($spec['images']) && is_string($spec['images'])
-                    ? json_decode($spec['images'], true)
-                    : [];
 
-                $encodedImages = $this->encodeImages($images);
+
 
                 ProductOrderSpecification::create([
                     'name' => $spec['name'] ?? null,
                     'title' => $spec['title'] ?? null,
                     'paragraphs' => $spec['paragraphs'] ?? null,
-                    'images' => $encodedImages,
+                    'images' => json_encode($spec['images'] ?? null,),
                     'description' => $spec['description'] ?? null,
                     'order_item_id' => $orderItem->id,
                     'product_id' => $item->id,
@@ -275,7 +271,7 @@ class CartController extends Controller
 
             // Fetch order items
             $orderItems = OrderItem::where('order_id', $order->id)->get();
- 
+
             // Get all cart items
             $cartItems = Cart::instance('cart')->content();
 
@@ -429,63 +425,63 @@ class CartController extends Controller
     }*/
 
     public function base64EncodeImageA($image)
-{
-    // مسار الصورة الكامل
-    $fullPath = public_path('storage/' . $image);
+    {
+        // مسار الصورة الكامل
+        $fullPath = public_path('storage/' . $image);
 
-    // تحقق إذا كانت الصورة موجودة
-    if (file_exists($fullPath)) {
-        $imageData = file_get_contents($fullPath);
-        return 'data:image/' . pathinfo($fullPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($imageData);
+        // تحقق إذا كانت الصورة موجودة
+        if (file_exists($fullPath)) {
+            $imageData = file_get_contents($fullPath);
+            return 'data:image/' . pathinfo($fullPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($imageData);
+        }
+
+        // إذا لم تكن الصورة موجودة
+        return null;
     }
 
-    // إذا لم تكن الصورة موجودة
-    return null;
-}
+    public function downloadPdf($orderId)
+    {
+        // جلب الطلب
+        $order = Order::findOrFail($orderId);
+        $cartItems = Cart::instance('cart')->content();
 
-public function downloadPdf($orderId)
-{
-    // جلب الطلب
-    $order = Order::findOrFail($orderId);
-    $cartItems = Cart::instance('cart')->content();
+        // جلب عناصر الطلب مع مواصفات المنتج
+        $orderItems = OrderItem::with(['product' => function ($query) {
+            $query->select('id', 'name', 'slug');
+        }])->where('order_id', $order->id)->get();
 
-    // جلب عناصر الطلب مع مواصفات المنتج
-    $orderItems = OrderItem::with(['product' => function ($query) {
-        $query->select('id', 'name', 'slug');
-    }])->where('order_id', $order->id)->get();
+        // دمج المواصفات والوصف
+        foreach ($orderItems as $item) {
+            foreach ($cartItems as $cartItem) {
+                if ($cartItem->id == $item->product_id) { // مطابقة المنتج
+                    $specifications = $cartItem->options->specifications ?? [];
 
-    // دمج المواصفات والوصف
-    foreach ($orderItems as $item) {
-        foreach ($cartItems as $cartItem) {
-            if ($cartItem->id == $item->product_id) { // مطابقة المنتج
-                $specifications = $cartItem->options->specifications ?? [];
+                    // التأكد من أن المواصفات هي مصفوفة
+                    if (!is_array($specifications)) {
+                        $specifications = json_decode($specifications, true);
+                    }
 
-                // التأكد من أن المواصفات هي مصفوفة
-                if (!is_array($specifications)) {
-                    $specifications = json_decode($specifications, true);
+                    $item->specifications = $specifications;
+                    $item->description = $cartItem->options->description ?? '';
+                    break;
                 }
-
-                $item->specifications = $specifications;
-                $item->description = $cartItem->options->description ?? '';
-                break;
             }
         }
+
+        // تحميل ملف PDF
+        $pdf = PDF::loadView('orders.pdf', [
+            'order' => $order,
+            'orderItems' => $orderItems,
+            'cartItems' => $cartItems,
+            'base64EncodeImageA' => [$this, 'base64EncodeImageA'], // تم تمرير دالة تحويل الصورة
+        ]);
+
+        Cart::instance('cart')->destroy();
+
+        return $pdf->download('order_' . $order->id . '.pdf');
     }
 
-    // تحميل ملف PDF
-    $pdf = PDF::loadView('orders.pdf', [
-        'order' => $order,
-        'orderItems' => $orderItems,
-        'cartItems' => $cartItems,
-        'base64EncodeImageA' => [$this, 'base64EncodeImageA'], // تم تمرير دالة تحويل الصورة
-    ]);
 
-    Cart::instance('cart')->destroy();
-
-    return $pdf->download('order_' . $order->id . '.pdf');
-}
-
-    
 
     public function updateDescription($rowId, Request $request)
     {
@@ -493,13 +489,13 @@ public function downloadPdf($orderId)
         $request->validate([
             'description' => 'required|string|max:255'  // التحقق من الوصف
         ]);
-    
+
         // الحصول على المنتج في السلة
         $product = Cart::instance('cart')->get($rowId);
-    
+
         // الاحتفاظ بالمواصفات الحالية في حالة عدم تعديلها
         $currentSpecifications = $product->options['specifications'] ?? [];
-    
+
         // تحديث الوصف مع الاحتفاظ بالمواصفات
         Cart::instance('cart')->update($rowId, [
             'options' => [
@@ -508,10 +504,8 @@ public function downloadPdf($orderId)
             ],
             'qty' => $product->qty  // الحفاظ على الكمية كما هي
         ]);
-    
+
         // العودة إلى الصفحة السابقة مع رسالة النجاح
         return redirect()->back()->with('success', 'Description updated successfully!');
     }
-    
-
 }

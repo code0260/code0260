@@ -34,7 +34,7 @@
 
     /* تغيير لون الرأس إلى الفيروزي */
     .cart-table th {
-        background-color: #109faf; /* الفيروزي */
+        background-color: #20bec6; /* الفيروزي */
         color: white;
         font-weight: bold;
         text-transform: uppercase;
@@ -80,14 +80,14 @@
     border-radius: 50%;  /* لجعل الأزرار مدورة */
     font-size: 20px;  /* تغيير حجم الخط داخل الأزرار */
     border: 1px solid #ddd;  /* تحديد حدود الأزرار */
-    background-color: #109faf;  /* اللون الفيروزي */
+    background-color: #20bec6;  /* اللون الفيروزي */
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .qty-control button:hover {
-    background-color: #168f9c;  /* اللون الفيروزي الداكن عند التمرير */
+    background-color: #20bec6;  /* اللون الفيروزي الداكن عند التمرير */
 }
 
 .qty-control input[type="number"] {
@@ -123,14 +123,14 @@
 
     .btn-primary,
     .btn-info {
-        background-color: #109faf; /* الفيروزي */
+        background-color: #20bec6; /* الفيروزي */
         color: white;
     }
 
     /* التأثيرات */
     .btn-primary:hover,
     .btn-info:hover {
-        background-color: #168f9c; /* الفيروزي الداكن */
+        background-color: #20bec6; /* الفيروزي الداكن */
         transform: scale(1.05);
         transition: transform 0.3s ease, background-color 0.3s ease;
     }
@@ -165,7 +165,7 @@
         text-decoration: none;
         font-weight: bold;
         padding: 12px 20px;
-        background-color: #109faf;
+        background-color: #20bec6;
         color: white;
     }
 
@@ -177,8 +177,8 @@
 
     /* تحسين عرض الجدول */
     .cart-table th:hover {
-        background-color: #168f9c; /* التغيير عند التمرير */
-        border-color: #168f9c;
+        background-color: #20bec6; /* التغيير عند التمرير */
+        border-color: #20bec6;
     }
 
     /* توسيط المحتويات داخل الـ <td> */
@@ -215,7 +215,7 @@
 }
 
 .next-btn:hover {
-    background-color: #109faf;
+    background-color: #20bec6;
 }
 
 </style>

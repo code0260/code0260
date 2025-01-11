@@ -96,7 +96,6 @@
                                                 <span class="badge bg-warning">Ordered</span>
                                             @endif
 
-                                            {{ $order->status }}
                                         </td>
                                         <td class="text-center">{{ $order->created_at }}</td>
                                         <td class="text-center">{{ $order->orderItems->count() }}</td>

@@ -32,8 +32,8 @@
     }
 
     .form-floating .form-control:focus {
-        border-color: #109faf;
-        box-shadow: 0 0 5px rgba(16, 159, 175, 0.5);
+        border-color: #20bec6;
+        box-shadow: 0 0 5px rgba(32,190,198,255);
         background-color: #ffffff;
     }
 
@@ -50,7 +50,7 @@
     /* تحديث زر الإرسال */
     .btn-primary,
     .btn-info {
-        background-color: #109faf; /* الفيروزي */
+        background-color: #20bec6; /* الفيروزي */
         color: white;
         padding: 10px 20px;
         border-radius: 4px;
@@ -60,11 +60,11 @@
 
     .btn-primary:hover,
     .btn-info:hover {
-        background-color: #168f9c; /* الفيروزي الداكن عند التمرير */
+        background-color: #20bec6; /* الفيروزي الداكن عند التمرير */
         transform: scale(1.05);
     }
 .btn-primary:hover {
-    background-color: #168f9c; /* لون فيروزي داكن عند التمرير */
+    background-color: #20bec6; /* لون فيروزي داكن عند التمرير */
     transform: scale(1.05); /* تكبير الزر قليلاً */
 }
 
@@ -85,7 +85,7 @@
     }
 
     .order-summary strong {
-        color: #109faf;
+        color: #20bec6;
     }
 
     /* تنسيق حقل التعديلات المتعدد */
@@ -101,11 +101,11 @@
     }
 
     .ckeditor:focus {
-        border-color: #109faf;
+        border-color: #20bec6;
         box-shadow: 0 0 5px rgba(16, 159, 175, 0.5);
     }
     .btn-primary {
-    background-color: #109faf; /* اللون الفيروزي */
+    background-color: #20bec6; /* اللون الفيروزي */
     color: white; /* لون النص */
 }
 .form-floating input[type="file"] {
@@ -116,7 +116,7 @@
 }
 
 .form-floating input[type="file"]:focus {
-    border-color: #109faf;
+    border-color: #20bec6;
     box-shadow: 0 0 5px rgba(16, 159, 175, 0.5);
     border-radius: 3px; /* التناسق عند التفاعل */
 }
@@ -195,7 +195,7 @@
                     <div id="image-preview" class="my-3"></div>
                 
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary" style="background-color: #109faf; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; transition: transform 0.3s ease, background-color 0.3s ease;">
+                        <button type="submit" class="btn btn-primary" style="background-color: #20bec6; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; transition: transform 0.3s ease, background-color 0.3s ease;">
                             Order Confirmation
                         </button>
                     </div>

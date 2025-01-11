@@ -156,7 +156,6 @@ class AdminController extends Controller
 
     public function product_store(Request $request)
     {
-
         $request->validate([
             'name' => 'required',
             'stock_status' => 'required|in:active,inactive',
@@ -169,7 +168,6 @@ class AdminController extends Controller
             'specifications.*.paragraphs' => 'nullable',
             'specifications.*.images' => 'array', // تحقق من أن الصور مصفوفة
         ]);
-
 
         // إنشاء المنتج
         $product = new Product();
@@ -193,16 +191,15 @@ class AdminController extends Controller
 
                 // حفظ الجمل الموصوفة
                 if (isset($spec['paragraphs'])) {
-                    $specification->paragraphs = json_encode($spec['paragraphs']);
+                    $specification->paragraphs = $spec['paragraphs'];
                 }
 
                 // حفظ الصور
                 $images = [];
                 if (isset($spec['images'])) {
                     foreach ($spec['images'] as $image) {
-                        $imageName = time() . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
-                        $image->move(public_path('uploads/products/specifications'), $imageName);
-                        $images[] = $imageName;
+                        $imageName = $image->store('products/specifications', 'public'); // تخزين الصورة في storage/app/public/products/specifications
+                        $images[] = $imageName; // حفظ المسار بالنسبة لـ storage
                     }
                 }
                 $specification->images = json_encode($images);
@@ -212,6 +209,7 @@ class AdminController extends Controller
 
         return redirect()->route('admin.products')->with('status', 'Product added successfully');
     }
+
 
 
     public function GenerateProductThumbnailImage($image, $imageName)
@@ -243,7 +241,6 @@ class AdminController extends Controller
             'stock_status' => 'required|in:active,inactive',
             'description' => 'nullable',
             'category_id' => 'required',
-
             'featured' => 'nullable|boolean',
             'specifications.*.id' => 'nullable|integer|exists:product_specifications,id',
             'specifications.*.name' => 'required|string|max:255',
@@ -252,21 +249,22 @@ class AdminController extends Controller
             'specifications.*.images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // تحديث بيانات المنتج
+        // تحديث المنتج
         $product = Product::findOrFail($request->id);
         $product->name = $request->name;
         $product->slug = $this->generateReferenceCode($request);
         $product->description = $request->description ?? 'Insert Description..';
         $product->category_id = $request->category_id;
-
         $product->stock_status = $request->stock_status;
         $product->featured = $request->featured ?? false;
         $product->save();
 
-        // المواصفات الجديدة والمحدثة
+        // تحديث المواصفات
+        $specifications = $request->specifications;
         $updatedSpecIds = [];
-        if ($request->has('specifications')) {
-            foreach ($request->specifications as $spec) {
+
+        if ($specifications && is_array($specifications)) {
+            foreach ($specifications as $spec) {
                 if (isset($spec['id']) && $spec['id']) {
                     $specification = ProductSpecification::findOrFail($spec['id']);
                 } else {
@@ -274,23 +272,23 @@ class AdminController extends Controller
                     $specification->product_id = $product->id;
                 }
 
-                // تحديث الحقول
                 $specification->name = $spec['name'];
                 $specification->title = $spec['title'] ?? null;
                 $specification->paragraphs = isset($spec['paragraphs']) ? $spec['paragraphs'] : null;
 
                 // إدارة الصور
-                $images = $specification->images ? json_decode($specification->images, true) : [];
-                if (isset($spec['images'])) {
+                if (isset($spec['images']) && is_array($spec['images'])) {
+                    $imagePaths = [];
                     foreach ($spec['images'] as $image) {
                         if ($image instanceof \Illuminate\Http\UploadedFile) {
-                            $imageName = time() . '-' . uniqid() . '.' . $image->getClientOriginalExtension();
-                            $image->move(public_path('uploads/products/specifications'), $imageName);
-                            $images[] = $imageName;
+                            $imagePaths[] = $image->store('products/specifications', 'public');
                         }
                     }
+
+                    // دمج الصور القديمة مع الجديدة
+                    $existingImages = $specification->images ? json_decode($specification->images, true) : [];
+                    $specification->images = json_encode(array_merge($existingImages, $imagePaths));
                 }
-                $specification->images = json_encode($images);
 
                 $specification->save();
                 $updatedSpecIds[] = $specification->id;
@@ -304,6 +302,12 @@ class AdminController extends Controller
 
         return redirect()->route('admin.products')->with('status', 'Product has been updated successfully!');
     }
+
+
+
+
+
+
 
 
     public function product_delete($id)
@@ -352,16 +356,17 @@ class AdminController extends Controller
 
 
 
-    public function order_details($order_id)
+    public function order_details($order_id,$rowId)
     {
         $order = Order::find($order_id);
 
         $orderItems = OrderItem::where('order_id', $order_id)
             ->orderBy('id')
             ->paginate(12);
+  // جلب عناصر الطلب مع مواصفات المنتج
 
 
-        return view('admin.order-details', compact('order', 'orderItems'));
+        return view('admin.order-details', compact('order', 'orderItems' ));
     }
 
 

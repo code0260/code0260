@@ -36,6 +36,7 @@ return new class extends Migration
             $table->date('canceled_date')->nullable();
             $table->json('images')->nullable();
             $table->text('extra')->nullable();
+            $table->string('reference_code')->nullable()->unique(); // كود الريفرنس للطلب، الآن يمكن أن يكون null
 
             $table->timestamps();
             $table->foreign('user_id')->references ('id')->on('users')->onDelete('cascade');

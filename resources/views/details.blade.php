@@ -77,11 +77,11 @@
             <div class="swiper-container">
               <div class="swiper-wrapper">
 
-
+ 
                 <div class="swiper-slide product-single__image-item">
-                  <img loading="lazy" class="h-auto" src="{{asset('uploads/products')}}/{{$product->image}}" width="674"
+                  <img loading="lazy" class="h-auto" src="{{ asset('images/logo/logo.png') }}" width="674"
                     height="674" alt="" />
-                  <a data-fancybox="gallery" href="{{asset('uploads/products')}}/{{$product->image}}" data-bs-toggle="tooltip"
+                  <a data-fancybox="gallery" href="{{ asset('images/logo/logo.png') }}" data-bs-toggle="tooltip"
                     data-bs-placement="left" title="Zoom">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <use href="#icon_zoom" />
@@ -112,7 +112,7 @@
                 </svg></div>
             </div>
           </div>
-       
+        
           <div class="product-single__thumbnail">
             <div class="swiper-container swiper-container-vertical">
                 <div class="swiper-wrapper">
@@ -138,17 +138,9 @@
       <div class="col-lg-5">
         <h1 class="product-single__name">{{$product->name}}</h1>
         <div class="product-single__price">
-          <span class="current-price">
-            @if ($product->sale_price) 
-              <s>${{$product->regular_price}}</s>  ${{$product->sale_price}}
-            @else
-              ${{$product->regular_price}}
-            @endif
-          </span>
+          
         </div>
-        <div class="product-single__short-desc">
-          <p>{{$product->short_description}}</p>
-        </div>
+        
 
         @if (Cart::instance('cart')->content()->where('id', $product->id)->count() > 0)
         <a href="{{route('cart.index')}}" class="btn btn-warning mb-3">Go To Order</a>
@@ -158,16 +150,15 @@
           <input type="hidden" name="id" value="{{$product->id}}" />
           <input type="hidden" name="quantity" value="1" />
           <input type="hidden" name="name" value="{{$product->name}}" />
-          <input type="hidden" name="price" value="{{$product->sale_price == '' ? $product->regular_price : $product->sale_price}}" />
-
+ 
           <button type="submit" class="btn btn-primary">Add to Product</button>
       </form>
       
         @endif
         <div class="product-single__meta-info">
           <div class="meta-item">
-            <label>SKU:</label>
-            <span>{{$product->SKU}}</span>
+            <label>Reference Code:</label>
+            <span>{{$product->slug}}</span>
           </div>
            
         </div>
@@ -179,7 +170,7 @@
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
           <a class="nav-link nav-link_underscore active" id="tab-description-tab" data-bs-toggle="tab"
-            href="#tab-description" role="tab" aria-controls="tab-description" aria-selected="true">Description</a>
+            href="#tab-description" role="tab" aria-controls="tab-description" aria-selected="true">Product Description</a>
         </li>
       </ul>
       <div class="tab-content">

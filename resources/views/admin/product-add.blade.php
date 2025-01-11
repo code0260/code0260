@@ -1,39 +1,41 @@
 @extends('layouts.admin')
 @section('content')
+    <style>
+        .specification-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
 
-<style>
+        .spec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
 
-.specification-item {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-}
+        .toggle-specification-btn {
+            background: #f0f0f0;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
 
-.spec-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
+        #preview-container-$ {
+            specificationCounter
+        }
 
-.toggle-specification-btn {
-    background: #f0f0f0;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-}
-#preview-container-${specificationCounter} img {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);}
+        img {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
 
-.specification-content {
-    display: block;
-}
-
-
-</style>
+        .specification-content {
+            display: block;
+        }
+    </style>
 
     <div class="main-content-inner">
         <div class="main-content-wrap">
@@ -80,20 +82,21 @@
                     @enderror
 
                     <fieldset class="category">
-                        <div class="body-title mb-10">Product Type  <span class="tf-color-1">*</span>
+                        <div class="body-title mb-10">Product Type <span class="tf-color-1">*</span>
                         </div>
                         <div class="select">
                             <select class="" name="category_id">
                                 <option>Choose Product Type </option>
-                                @foreach ($categories as $category )
-                                <option value="{{$category->id}}">{{$category->name}}</option>
-
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
                                 @endforeach
-                            
+
                             </select>
                         </div>
                     </fieldset>
-                    @error('category_id')<span class="alert alert-danger text-center">{{$message}}</span>@enderror
+                    @error('category_id')
+                        <span class="alert alert-danger text-center">{{ $message }}</span>
+                    @enderror
 
 
 
@@ -138,34 +141,63 @@
     <!-- /main-content-wrap -->
 @endsection
 @push('scripts')
-<script>
-     $(document).ready(function() {
-        let specificationCounter = 0;
+    <script src="https://cdn.ckeditor.com/ckeditor5/34.1.0/classic/ckeditor.js"></script>
 
-        // تهيئة محرر النصوص
-        const initializeTextEditor = (selector) => {
-    $(selector).each(function() {
-        if (!$(this).data('ckeditor-initialized')) {
-            CKEDITOR.replace(this);
+    <script>
+        $(document).ready(function() {
+            let specificationCounter = 0;
 
-            // بعد تهيئة الـ CKEditor، نزيل التاغات أو الدبل كوتيشن إذا كانت موجودة
-            var content = $(this).val(); // الحصول على المحتوى
-            content = content.replace(/<[^>]*>/g, ''); // إزالة أي تاغات HTML
-            content = content.replace(/\"/g, ''); // إزالة الدبل كوتيشن
+            // تهيئة محرر النصوص
+            const initializeTextEditor = (selector) => {
+                $(selector).each(function() {
+                    if (!$(this).data('ckeditor-initialized')) {
+                        CKEDITOR.replace(this);
 
-            // تعيين المحتوى المعدل داخل الـ CKEditor
-            CKEDITOR.instances[$(this).attr('id')].setData(content);
-            
-            $(this).data('ckeditor-initialized', true);
-        }
-    });
-}; 
+                        // بعد تهيئة الـ CKEditor، نزيل التاغات أو الدبل كوتيشن إذا كانت موجودة
+                        var content = $(this).val(); // الحصول على المحتوى
+                        //content = content.replace(/<[^>]*>/g, ''); // إزالة أي تاغات HTML
+                        // content = content.replace(/\"/g, ''); // إزالة الدبل كوتيشن
 
+                        // تعيين المحتوى المعدل داخل الـ CKEditor
+                        CKEDITOR.instances[$(this).attr('id')].setData(content);
 
-        // إضافة قسم مواصفات جديد
-        $('#add-specification-btn').on('click', function() {
-            specificationCounter++;
-            const newSpecification = `
+                        $(this).data('ckeditor-initialized', true);
+                    }
+                });
+            };
+            $(document).ready(function() {
+                $(".ckeditor").each(function() {
+                    // الحصول على المحتوى مع إزالة أي تاغات HTML والفواصل
+                    var content = $(this).val(); // أو استخدم .html() إذا كان المحتوى داخل HTML
+                    // content = content.replace(/<[^>]*>/g, ''); // إزالة أي تاغات HTML
+                    // content = content.replace(/[\r\n\t]/g, ''); // إزالة \r\n و \t (الفواصل)
+                    // content = content.replace(/\"/g, ''); // إزالة الدبل كوتيشن (علامات الاقتباس)
+
+                    // تهيئة CKEditor وتعيين المحتوى المعدل فيه
+                    ClassicEditor
+                        .create(this)
+                        .then(editor => {
+                            editor.setData(content);
+
+                            // عند حدوث تغيير في البيانات داخل الـ CKEditor
+                            editor.model.document.on('change:data', () => {
+                                let data = editor.getData();
+                                // data = data.replace(/<[^>]*>/g, ''); // إزالة التاغات HTML
+                                // data = data.replace(/[\r\n\t]/g, ''); // إزالة الفواصل غير المرغوب فيها
+                                // data = data.replace(/\"/g, ''); // إزالة الدبل كوتيشن
+                                console.log(data); // طباعة النص المعدل
+                            });
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                });
+            });
+
+            // إضافة قسم مواصفات جديد
+            $('#add-specification-btn').on('click', function() {
+                specificationCounter++;
+                const newSpecification = `
             <div class="specification-item" id="specification-${specificationCounter}">
                 <div class="spec-header">
                     <span id="specification-label-${specificationCounter}">Specification ${specificationCounter}</span>
@@ -184,86 +216,96 @@
                         <label for="spec-paragraphs-${specificationCounter}">Specification Paragraphs:</label>
                         <textarea name="specifications[${specificationCounter}][paragraphs]" id="spec-paragraphs-${specificationCounter}" placeholder="Enter paragraphs"></textarea>
                     </div>
-                    <div class="specification-gallery">
-                        <fieldset>
-                            <div class="body-title mb-10">Upload Gallery Images</div>
-                            <div class="upload-image mb-16">
-                                <label class="uploadfile" for="gFile-${specificationCounter}">
-                                    <span class="icon"><i class="icon-upload-cloud"></i></span>
-                                    <span class="text-tiny">Drop your images here or select <span class="tf-color">click to browse</span></span>
-                                    <input type="file" id="gFile-${specificationCounter}" name="specifications[${specificationCounter}][images][]" accept="image/*" multiple>
-                                </label>
-                                <div id="preview-container-${specificationCounter}" class="preview-container"></div>
-                            </div>
-                        </fieldset>
-                    </div>
+                  <div class="specification-gallery">
+    <fieldset>
+        <label for="specifications[${specificationCounter}][images]">Images</label>
+        <div class="gallery-preview" id="preview-container-${specificationCounter}">
+            <!-- سيتم عرض الصور الحالية هنا -->
+            @foreach ($specification['images'] ?? [] as $image)
+                <div class="gitems">
+                    <img src="{{ asset('storage/' . $image) }}" alt="Specification Image">
+                    <button type="button" class="remove-old-image-btn" data-image="{{ $image }}">X</button>
+                </div>
+            @endforeach
+        </div>
+        <input type="file" name="specifications[${specificationCounter}][images][]" id="gFile-${specificationCounter}" class="form-control modern-input" accept="image/*" multiple>
+    </fieldset>
+</div>
+
                     <button type="button" class="remove-specification-btn" data-spec-id="${specificationCounter}">Remove</button>
                 </div>
             </div>`;
 
-            $('#specifications-container').append(newSpecification);
-            initializeTextEditor(`#spec-paragraphs-${specificationCounter}`);
+                $('#specifications-container').append(newSpecification);
+                initializeTextEditor(`#spec-paragraphs-${specificationCounter}`);
 
-            // تحديث النص الظاهر بناءً على إدخال اسم المواصفات
-            $(`#spec-name-${specificationCounter}`).on('input', function() {
-                const name = $(this).val() || `Specification ${specificationCounter}`;
-                $(`#specification-label-${specificationCounter}`).text(name);
+                // تحديث النص الظاهر بناءً على إدخال اسم المواصفات
+                $(`#spec-name-${specificationCounter}`).on('input', function() {
+                    const name = $(this).val() || `Specification ${specificationCounter}`;
+                    $(`#specification-label-${specificationCounter}`).text(name);
+                });
+                // تهيئة CKEditor للسبيسفكيشن الجديد
+                ClassicEditor.create($(
+                    `textarea[name='specifications[new_${specificationCounter}][paragraphs]']`)[0]);
             });
-        });
 
-        // إظهار/إخفاء قسم المواصفات
-        $(document).on('click', '.toggle-specification-btn', function() {
-            const specId = $(this).data('spec-id');
-            const specContent = $(`#specification-${specId} .specification-content`);
-            const button = $(this);
+            // إظهار/إخفاء قسم المواصفات
+            $(document).on('click', '.toggle-specification-btn', function() {
+                const specId = $(this).data('spec-id');
+                const specContent = $(`#specification-${specId} .specification-content`);
+                const button = $(this);
 
-            if (specContent.is(':visible')) {
-                specContent.slideUp();
-                button.text('Show');
-            } else {
-                specContent.slideDown();
-                button.text('Hide');
-            }
-        });
-
-        // معاينة الصور
-        $(document).on('change', 'input[type="file"]', function(event) {
-            if (event.target && event.target.id.startsWith('gFile-')) {
-                const fileInput = event.target;
-                const previewContainerId = fileInput.id.replace('gFile-', 'preview-container-');
-                const previewContainer = document.getElementById(previewContainerId);
-                const files = fileInput.files;
-
-                previewContainer.innerHTML = '';
-                if (files && files.length > 0) {
-                    Array.from(files).forEach(file => {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const img = document.createElement('img');
-                            img.src = e.target.result;
-                            img.alt = 'Image Preview';
-                            img.style.maxWidth = '100px';
-                            img.style.maxHeight = '100px';
-                            img.style.objectFit = 'cover';
-                            previewContainer.appendChild(img);
-                        };
-                        reader.readAsDataURL(file);
-                    });
+                if (specContent.is(':visible')) {
+                    specContent.slideUp();
+                    button.text('Show');
                 } else {
-                    previewContainer.innerHTML = '<p>No images selected</p>';
+                    specContent.slideDown();
+                    button.text('Hide');
                 }
-            }
+            });
+
+            // معاينة الصور
+            // معاينة الصور
+            $(document).on('change', 'input[type="file"]', function(event) {
+                if (event.target && event.target.id.startsWith('gFile-')) {
+                    const fileInput = event.target;
+                    const previewContainerId = fileInput.id.replace('gFile-', 'preview-container-');
+                    const previewContainer = document.getElementById(previewContainerId);
+                    const files = fileInput.files;
+
+                    previewContainer.innerHTML = ''; // Clear existing previews
+                    if (files && files.length > 0) {
+                        Array.from(files).forEach(file => {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const gItem = document.createElement('div');
+                                gItem.className = 'gitems';
+                                gItem.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview Image" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+                        <button type="button" class="remove-old-image-btn">X</button>
+                    `;
+                                gItem.querySelector('.remove-old-image-btn').addEventListener(
+                                    'click', () => gItem.remove());
+                                previewContainer.appendChild(gItem);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    } else {
+                        previewContainer.innerHTML = '<p>No images selected</p>';
+                    }
+                }
+            });
+
+
+
+            // إزالة قسم المواصفات
+            $(document).on('click', '.remove-specification-btn', function() {
+                const specId = $(this).data('spec-id');
+                $(`#specification-${specId}`).remove();
+            });
+
+            // تهيئة محرر النصوص للمواصفات
+            initializeTextEditor('textarea[name^="specifications"]');
         });
-
-        // إزالة قسم المواصفات
-        $(document).on('click', '.remove-specification-btn', function() {
-            const specId = $(this).data('spec-id');
-            $(`#specification-${specId}`).remove();
-        });
-
-        // تهيئة محرر النصوص للمواصفات
-        initializeTextEditor('textarea[name^="specifications"]');
-    });
-
-</script>
+    </script>
 @endpush

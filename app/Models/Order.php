@@ -23,6 +23,8 @@ class Order extends Model
         'landmark',
         'zip',
         'status',
+        'note',
+        'extra',
         // Add any other fields you want to be mass assignable
     ];
     use HasFactory;

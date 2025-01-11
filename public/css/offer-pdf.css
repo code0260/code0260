@@ -1,0 +1,8 @@
+.page-break {
+    page-break-after: always;
+}
+
+.test {
+    color: brown;
+    background-color: aqua;
+}

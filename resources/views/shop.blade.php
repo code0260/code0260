@@ -48,7 +48,7 @@
      padding: 10px 20px;
      border-radius: 4px;
      font-size: 14px;
-     background-color: #109faf; /* اللون الأزرق */
+     background-color: #20bec6; /* اللون الأزرق */
      color: rgb(0, 0, 0);
      border: none;
      transition: background-color 0.3s ease, transform 0.3s ease;
@@ -57,7 +57,7 @@
  /* تأثير عند التمرير فوق الأزرار */
  button:hover,
  .btn:hover {
-     background-color: #109faf;
+     background-color: #20bec6;
      transform: scale(1.05);
  }
  
@@ -70,13 +70,13 @@
  }
  /* تنسيق زر "Go To Order" */
  .btn-warning {
-     background-color: #109faf; /* اللون الفيروزي */
-     border-color: #109faf; /* اللون الفيروزي */
+     background-color: #20bec6; /* اللون الفيروزي */
+     border-color: #20bec6; /* اللون الفيروزي */
  }
  
  .btn-warning:hover {
-     background-color: #109faf; /* لون فيروزي أفتح قليلاً عند التمرير */
-     border-color: #109faf; /* نفس اللون في حالة التمرير */
+     background-color: #20bec6; /* لون فيروزي أفتح قليلاً عند التمرير */
+     border-color: #20bec6; /* نفس اللون في حالة التمرير */
  }
  
  
@@ -101,9 +101,9 @@
  </style>
  <style>
    th {
-       background-color: #168f9c !important; /* اللون الفيروزي خلفية */
+       background-color: #20bec6 !important; /* اللون الفيروزي خلفية */
        color: white !important; /* النص أبيض */
-       border: 2px solid #168f9c!important; /* الحدود باللون الفيروزي */
+       border: 2px solid #20bec6!important; /* الحدود باللون الفيروزي */
        padding: 12px !important; /* لضبط المسافة داخل العنصر */
        text-align: left !important; /* محاذاة العمود الأول لليسار */
    }
@@ -113,8 +113,8 @@
    }
  
    th:hover {
-       background-color:  #109faf !important; /* تغيير الخلفية عندما يمر الفأرة فوق العنصر */
-       border-color: #109faf  !important; /* تغيير اللون عند المرور */
+       background-color:  #20bec6 !important; /* تغيير الخلفية عندما يمر الفأرة فوق العنصر */
+       border-color: #20bec6  !important; /* تغيير اللون عند المرور */
    }
  </style>
  

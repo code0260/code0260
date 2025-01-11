@@ -11,6 +11,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Middleware\RedirectIfNotAuthenticated;
 
 Auth::routes();
+Route::delete('/order/{order_id}/image', [UserController::class, 'deleteOrderImage'])->name('order.image.delete');
+Route::delete('/specification/image/delete', [UserController::class, 'deleteSpecificationImage'])->name('specification.image.delete');
 
 Route::middleware([RedirectIfNotAuthenticated::class])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home.index');
